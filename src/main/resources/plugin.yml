@@ -9,6 +9,9 @@ commands:
     description: Main command for Soul Ledger
     aliases: [sl]
     usage: /<command> [args]
+  invocaralma:
+    description: Invoca a alma do último mob morto (Necromancia)
+    usage: /invocaralma
 permissions:
   soulledger.admin:
     description: Permission to reload config and manage

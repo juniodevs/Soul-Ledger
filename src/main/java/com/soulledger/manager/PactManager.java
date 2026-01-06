@@ -22,6 +22,12 @@ import org.bukkit.ChatColor;
 
 public class PactManager {
 
+    // Verifica se o jogador tem o pacto de necromancia
+    public boolean hasNecromancyPact(Player player) {
+        List<String> pacts = getPlayerPacts(player);
+        return pacts.stream().anyMatch(p -> p.equalsIgnoreCase("necromancia") || p.equalsIgnoreCase("necromancy"));
+    }
+
     private final SoulLedgerPlugin plugin;
     private final Map<String, Pact> loadedPacts = new HashMap<>();
     private final Map<UUID, List<String>> activePacts = new HashMap<>();

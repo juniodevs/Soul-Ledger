@@ -7,6 +7,15 @@ settings:
   cost_item: DIAMOND
 
 pacts:
+  necromancy:
+    display_name: "&2Necromancer's Pact"
+    cost_health: 6.0
+    permission: "soulledger.pact.necromancy"
+    icon: WITHER_SKELETON_SKULL
+    effects:
+      - "REGENERATION:0"
+      - "NIGHT_VISION:0"
+
   glass_cannon:
     display_name: "&cGlass Cannon"
     cost_health: 10.0 # Reduces 5 hearts (Base health is 20.0)
