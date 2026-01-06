@@ -9,6 +9,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SoulLedgerPlugin extends JavaPlugin {
 
+    private com.soulledger.listener.NecromancyListener necromancyListener;
+
     private PactManager pactManager;
     private PactGui pactGui;
 
@@ -19,8 +21,12 @@ public class SoulLedgerPlugin extends JavaPlugin {
         this.pactManager = new PactManager(this);
         this.pactGui = new PactGui(this);
 
+        // GUI de invocação do necromante
+        com.soulledger.gui.NecromancerSummonGui necromancerSummonGui = new com.soulledger.gui.NecromancerSummonGui(this, necromancyListener);
+        getServer().getPluginManager().registerEvents(necromancerSummonGui, this);
+
         // Listener e comando de necromancia
-        com.soulledger.listener.NecromancyListener necromancyListener = new com.soulledger.listener.NecromancyListener(pactManager, this);
+        this.necromancyListener = new com.soulledger.listener.NecromancyListener(pactManager, this);
         getServer().getPluginManager().registerEvents(necromancyListener, this);
         getServer().getPluginManager().registerEvents(new com.soulledger.listener.NecromancerStickListener(), this);
         getServer().getPluginManager().registerEvents(new com.soulledger.listener.NecromancerStickUseListener(pactManager, necromancyListener), this);
@@ -31,6 +37,10 @@ public class SoulLedgerPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(pactGui, this);
 
         getLogger().info("Soul Ledger started. Death awaits.");
+    }
+
+    public com.soulledger.command.sub.ListSoulsSubCommand createListSoulsSubCommand() {
+        return new com.soulledger.command.sub.ListSoulsSubCommand(necromancyListener);
     }
     
     public PactGui getPactGui() {

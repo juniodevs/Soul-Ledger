@@ -1,4 +1,5 @@
 package com.soulledger.listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 import com.soulledger.manager.PactManager;
 import org.bukkit.Bukkit;
@@ -16,8 +17,26 @@ import org.bukkit.plugin.Plugin;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.List;
 
 public class NecromancyListener implements Listener {
+    @EventHandler
+    public void onEntityExplode(EntityExplodeEvent event) {
+        Entity entity = event.getEntity();
+        if (entity instanceof org.bukkit.entity.Creeper && entity.hasMetadata("necromancer_owner")) {
+            String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
+            Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
+            if (owner != null && owner.isOnline()) {
+                double currentMax = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.min(20.0, currentMax + 2));
+                owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada (Creeper explodiu).");
+                List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
+                if (list != null) {
+                    list.remove(entity);
+                }
+            }
+        }
+    }
 
             @EventHandler
             public void onEntityTarget(EntityTargetEvent event) {
@@ -32,8 +51,8 @@ public class NecromancyListener implements Listener {
                     }
                 }
             }
-        // Mapeia entidades invocadas para o dono
-        private final Map<UUID, UUID> summonedToOwner = new HashMap<>();
+    // Mapeia jogador -> lista de almas invocadas
+    private final Map<UUID, List<LivingEntity>> summonedSouls = new HashMap<>();
     private final PactManager pactManager;
     private final Plugin plugin;
     // Guarda o último mob morto por cada jogador
@@ -62,7 +81,33 @@ public class NecromancyListener implements Listener {
                 double currentMax = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
                 owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.min(20.0, currentMax + 2));
                 owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada.");
+                // Remove da lista de almas
+                List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
+                if (list != null) {
+                    list.remove(entity);
+                }
             }
+        }
+    }
+
+    // Adiciona alma à lista do necromante
+    public void addSummonedSoul(Player owner, LivingEntity soul) {
+        summonedSouls.computeIfAbsent(owner.getUniqueId(), k -> new java.util.ArrayList<>()).add(soul);
+    }
+
+    // Lista as almas invocadas pelo jogador
+    public java.util.List<LivingEntity> getSummonedSouls(Player owner) {
+        return summonedSouls.getOrDefault(owner.getUniqueId(), java.util.Collections.emptyList());
+    }
+
+    // Remove todas as almas do necromante (ex: ao perder pacto)
+    public void removeAllSouls(Player owner) {
+        List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
+        if (list != null) {
+            for (LivingEntity soul : new java.util.ArrayList<>(list)) {
+                if (!soul.isDead()) soul.remove();
+            }
+            list.clear();
         }
     }
 
