@@ -31,7 +31,6 @@ public class PactManager {
         this.pdcKey = new NamespacedKey(plugin, "active_pacts");
         loadPactsFromConfig();
         
-        // Reload active pacts for online players (in case of /reload)
         for (Player p : plugin.getServer().getOnlinePlayers()) {
             restorePacts(p);
         }
@@ -124,6 +123,9 @@ public class PactManager {
         for (PotionEffect effect : pact.getEffects()) {
             player.addPotionEffect(effect);
         }
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 0));
+        player.getWorld().spawnParticle(Particle.SMOKE_LARGE, player.getLocation().add(0, 1, 0), 10, 0.5, 1.2, 0.5, 0.05);
+        player.getWorld().spawnParticle(Particle.END_ROD, player.getLocation().add(0, 1, 0), 8, 0.3, 0.8, 0.3, 0.03);
 
         currentPacts.add(pactId);
         activePacts.put(player.getUniqueId(), currentPacts);
