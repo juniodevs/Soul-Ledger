@@ -163,10 +163,36 @@ public class PactManager {
 
         player.sendMessage(plugin.getFormattedMessage("pact_sealed").replace("%pact%", pact.getDisplayName()));
 
+        // Dar stick personalizado se for necromancy
+        if (pactId.equalsIgnoreCase("necromancy") || pactId.equalsIgnoreCase("necromancia")) {
+            org.bukkit.inventory.ItemStack stick = new org.bukkit.inventory.ItemStack(org.bukkit.Material.STICK);
+            org.bukkit.inventory.meta.ItemMeta meta = stick.getItemMeta();
+            meta.setDisplayName(org.bukkit.ChatColor.DARK_PURPLE + "Cajado das Almas");
+            java.util.List<String> lore = new java.util.ArrayList<>();
+            lore.add(org.bukkit.ChatColor.GRAY + "Clique para invocar a alma do último mob morto.");
+            lore.add(org.bukkit.ChatColor.DARK_GRAY + "(Necromancer)");
+            meta.setLore(lore);
+            meta.setUnbreakable(true);
+            // Adiciona Maldição do Desaparecimento
+            meta.addEnchant(org.bukkit.enchantments.Enchantment.VANISHING_CURSE, 1, true);
+            stick.setItemMeta(meta);
+            stick.setAmount(1);
+            player.getInventory().addItem(stick);
+        }
         return true;
     }
 
     public void revokeAllPacts(Player player) {
+                // Remover stick necromancer
+                org.bukkit.inventory.PlayerInventory inv = player.getInventory();
+                for (org.bukkit.inventory.ItemStack item : inv.getContents()) {
+                    if (item != null && item.getType() == org.bukkit.Material.STICK && item.hasItemMeta()) {
+                        org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+                        if (meta.hasDisplayName() && meta.getDisplayName().contains("Cajado das Almas")) {
+                            inv.remove(item);
+                        }
+                    }
+                }
         AttributeInstance healthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (healthAttr != null) {
             healthAttr.setBaseValue(healthAttr.getDefaultValue());

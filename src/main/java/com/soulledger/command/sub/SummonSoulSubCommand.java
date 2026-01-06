@@ -44,7 +44,7 @@ public class SummonSoulSubCommand implements TabExecutor {
         LivingEntity mob = (LivingEntity) lastDeath.getEntity();
         EntityType type = mob.getType();
         LivingEntity summoned = (LivingEntity) player.getWorld().spawnEntity(player.getLocation(), type);
-        summoned.setCustomName(ChatColor.DARK_PURPLE + "Alma Invocada");
+        summoned.setCustomName(ChatColor.DARK_PURPLE + "Alma Invocada por " + player.getName());
         summoned.setCustomNameVisible(true);
         summoned.setRemoveWhenFarAway(true);
         // Marca entidade como necromante e vincula ao jogador
