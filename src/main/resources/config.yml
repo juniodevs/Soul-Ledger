@@ -142,6 +142,10 @@ messages:
     soul_recovered: "&aYou recovered 1 heart by losing your summoned soul."
     soul_recovered_creeper: "&aYou recovered 1 heart by losing your summoned soul (Creeper exploded)."
     prefix: "&5[Soul Ledger] "
+    soul_staff_name: "Soul Staff"
+    soul_staff_lore:
+      - "&7Click to summon the soul of mobs"
+      - "&8(Necromancer)"
     pact_sealed: "%prefix%&dYou sacrificed your vital essence for the %pact%&d pact!"
     pact_revoked: "%prefix%&7Your soul was purified in death."
     already_has: "&cYou already have this pact."
@@ -172,6 +176,10 @@ messages:
     soul_recovered: "&aVocê recuperou 1 coração ao perder sua alma invocada."
     soul_recovered_creeper: "&aVocê recuperou 1 coração ao perder sua alma invocada (Creeper explodiu)."
     prefix: "&5[Soul Ledger] "
+    soul_staff_name: "Cajado das Almas"
+    soul_staff_lore:
+      - "&7Clique para invocar a alma de mobs."
+      - "&8(Necromante)"
     pact_sealed: "%prefix%&dVocê sacrificou sua essência vital pelo pacto %pact%&d!"
     pact_revoked: "%prefix%&7Sua alma foi purificada na morte."
     already_has: "&cVocê já possui este pacto."

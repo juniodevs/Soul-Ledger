@@ -182,10 +182,10 @@ public class PactManager {
         if (pactId.equalsIgnoreCase("necromancy") || pactId.equalsIgnoreCase("necromancia")) {
             org.bukkit.inventory.ItemStack stick = new org.bukkit.inventory.ItemStack(org.bukkit.Material.STICK);
             org.bukkit.inventory.meta.ItemMeta meta = stick.getItemMeta();
-            meta.setDisplayName(org.bukkit.ChatColor.DARK_PURPLE + "Cajado das Almas");
-            java.util.List<String> lore = new java.util.ArrayList<>();
-            lore.add(org.bukkit.ChatColor.GRAY + "Clique para invocar a alma do último mob morto.");
-            lore.add(org.bukkit.ChatColor.DARK_GRAY + "(Necromancer)");
+            String lang = plugin.getConfig().getString("settings.language", "en");
+            String name = plugin.getConfig().getString("messages." + lang + ".soul_staff_name", "Cajado das Almas");
+            java.util.List<String> lore = plugin.getConfig().getStringList("messages." + lang + ".soul_staff_lore");
+            meta.setDisplayName(org.bukkit.ChatColor.DARK_PURPLE + name);
             meta.setLore(lore);
             meta.setUnbreakable(true);
             meta.addEnchant(org.bukkit.enchantments.Enchantment.VANISHING_CURSE, 1, true);
@@ -201,7 +201,9 @@ public class PactManager {
                 for (org.bukkit.inventory.ItemStack item : inv.getContents()) {
                     if (item != null && item.getType() == org.bukkit.Material.STICK && item.hasItemMeta()) {
                         org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
-                        if (meta.hasDisplayName() && meta.getDisplayName().contains("Cajado das Almas")) {
+                        String lang = plugin.getConfig().getString("settings.language", "en");
+                        String name = plugin.getConfig().getString("messages." + lang + ".soul_staff_name", "Cajado das Almas");
+                        if (meta.hasDisplayName() && meta.getDisplayName().contains(name)) {
                             inv.remove(item);
                         }
                     }
