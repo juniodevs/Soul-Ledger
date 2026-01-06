@@ -45,7 +45,6 @@ public class NecromancyListener implements Listener {
             @EventHandler
             public void onEntityTarget(EntityTargetEvent event) {
         try {
-            if (!(event.getEntity() instanceof org.bukkit.entity.Zombie)) return;
             if (!(event.getTarget() instanceof Player)) return;
             LivingEntity entity = (LivingEntity) event.getEntity();
             if (entity.hasMetadata("necromancer_owner")) {

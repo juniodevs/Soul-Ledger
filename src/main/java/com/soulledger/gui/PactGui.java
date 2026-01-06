@@ -49,7 +49,10 @@ public class PactGui implements Listener {
                 meta.setDisplayName(ChatColor.LIGHT_PURPLE + "✦ " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', pact.getDisplayName()));
                 List<String> lore = new ArrayList<>();
                 lore.add(ChatColor.GRAY + "Sacrifice: " + ChatColor.RED + (pact.getHealthCost() > 0 ? "-" : "+") + Math.abs((int)pact.getHealthCost()) + " HP");
-                lore.add(ChatColor.GRAY + "Required: " + ChatColor.AQUA + pactManager.getGlobalCostItem().name().replace("_", " ").toLowerCase());
+                org.bukkit.Material displayCost = pact.getCostItem() != null ? pact.getCostItem() : pactManager.getGlobalCostItem();
+                if (displayCost != null) {
+                    lore.add(ChatColor.GRAY + "Required: " + ChatColor.AQUA + displayCost.name().replace("_", " ").toLowerCase());
+                }
                 if (!pact.getAttributeModifiers().isEmpty()) {
                     lore.add("");
                     lore.add(ChatColor.GOLD + "Attributes:");

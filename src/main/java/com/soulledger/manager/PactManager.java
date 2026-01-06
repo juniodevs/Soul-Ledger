@@ -48,8 +48,14 @@ public class PactManager {
         ConfigurationSection section = plugin.getConfig().getConfigurationSection("pacts");
         if (section == null) return;
         String globalCostItemName = plugin.getConfig().getString("settings.cost_item", "DIAMOND");
-        globalCostItem = Material.getMaterial(globalCostItemName.toUpperCase());
-        if (globalCostItem == null) globalCostItem = Material.DIAMOND;
+        if (globalCostItemName != null) globalCostItemName = globalCostItemName.trim();
+        if (globalCostItemName == null || globalCostItemName.isEmpty()) globalCostItemName = "DIAMOND";
+        if ("OFF".equalsIgnoreCase(globalCostItemName)) {
+            globalCostItem = null;
+        } else {
+            globalCostItem = Material.getMaterial(globalCostItemName.toUpperCase());
+        }
+        plugin.getLogger().info("[SoulLedger] settings.cost_item (raw) = '" + plugin.getConfig().getString("settings.cost_item") + "' -> trimmed='" + globalCostItemName + "' -> resolved globalCostItem = " + (globalCostItem == null ? "OFF" : globalCostItem.name()));
 
         for (String key : section.getKeys(false)) {
             String displayName = section.getString(key + ".display_name", key);
@@ -62,9 +68,18 @@ public class PactManager {
                 icon = Material.NETHER_STAR;
             }
 
-            String costItemName = section.getString(key + ".cost_item", "DIAMOND");
-            Material costItem = Material.getMaterial(costItemName.toUpperCase());
-            if (costItem == null) costItem = globalCostItem;
+            String costItemName = section.getString(key + ".cost_item", null);
+            if (costItemName != null) costItemName = costItemName.trim();
+            Material costItem;
+            if (costItemName == null || costItemName.isEmpty()) {
+                // No per-pact value -> inherit global setting (which may be null/off)
+                costItem = globalCostItem;
+            } else if ("OFF".equalsIgnoreCase(costItemName)) {
+                costItem = null;
+            } else {
+                costItem = Material.getMaterial(costItemName.toUpperCase());
+                if (costItem == null) costItem = globalCostItem;
+            }
 
             Map<Attribute, Double> attributeModifiers = new HashMap<>();
             if (section.isConfigurationSection(key + ".attributes")) {
@@ -98,7 +113,7 @@ public class PactManager {
                 }
             }
 
-            Pact pact = new Pact(key, displayName, cost, attributeModifiers, effects, permission, icon);
+            Pact pact = new Pact(key, displayName, cost, costItem, attributeModifiers, effects, permission, icon);
             loadedPacts.put(key, pact);
         }
         plugin.getLogger().info("Loaded " + loadedPacts.size() + " pacts.");
@@ -123,12 +138,14 @@ public class PactManager {
             return false;
         }
 
-        if (globalCostItem != null && !globalCostItem.name().equalsIgnoreCase("OFF")) {
-            if (player.getInventory().getItemInMainHand().getType() != globalCostItem) {
-                player.sendMessage(ChatColor.RED + "You must hold a " + globalCostItem.name().replace("_", " ").toLowerCase() + " in your main hand to seal this pact.");
+        Material effectiveCostItem = pact.getCostItem() != null ? pact.getCostItem() : globalCostItem;
+        if (effectiveCostItem != null) {
+            org.bukkit.inventory.ItemStack hand = player.getInventory().getItemInMainHand();
+            if (hand == null || hand.getType() != effectiveCostItem || hand.getAmount() <= 0) {
+                player.sendMessage(ChatColor.RED + "You must hold a " + effectiveCostItem.name().replace("_", " ").toLowerCase() + " in your main hand to seal this pact.");
                 return false;
             }
-            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
+            hand.setAmount(hand.getAmount() - 1);
         }
 
         if (pact.getHealthCost() != 0) {
