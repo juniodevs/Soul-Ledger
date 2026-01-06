@@ -97,6 +97,43 @@ public class NecromancerSummonGui implements Listener {
             summoned.setCustomNameVisible(true);
             summoned.setRemoveWhenFarAway(true);
             summoned.setMetadata("necromancer_owner", new org.bukkit.metadata.FixedMetadataValue(plugin, player.getUniqueId().toString()));
+
+            if (type == EntityType.ZOMBIE || type == EntityType.HUSK || type == EntityType.DROWNED || type == EntityType.ZOMBIFIED_PIGLIN) {
+                java.util.Random rand = new java.util.Random();
+                org.bukkit.inventory.EntityEquipment eq = summoned.getEquipment();
+                if (eq != null) {
+                    Material[] helmets = {Material.LEATHER_HELMET, Material.IRON_HELMET, Material.GOLDEN_HELMET, Material.CHAINMAIL_HELMET, Material.DIAMOND_HELMET, Material.NETHERITE_HELMET, null};
+                    Material[] chestplates = {Material.LEATHER_CHESTPLATE, Material.IRON_CHESTPLATE, Material.GOLDEN_CHESTPLATE, Material.CHAINMAIL_CHESTPLATE, Material.DIAMOND_CHESTPLATE, Material.NETHERITE_CHESTPLATE, null};
+                    Material[] leggings = {Material.LEATHER_LEGGINGS, Material.IRON_LEGGINGS, Material.GOLDEN_LEGGINGS, Material.CHAINMAIL_LEGGINGS, Material.DIAMOND_LEGGINGS, Material.NETHERITE_LEGGINGS, null};
+                    Material[] boots = {Material.LEATHER_BOOTS, Material.IRON_BOOTS, Material.GOLDEN_BOOTS, Material.CHAINMAIL_BOOTS, Material.DIAMOND_BOOTS, Material.NETHERITE_BOOTS, null};
+                    Material[] swords = {Material.WOODEN_SWORD, Material.STONE_SWORD, Material.IRON_SWORD, Material.GOLDEN_SWORD, Material.DIAMOND_SWORD, Material.NETHERITE_SWORD, null};
+
+                    Material helmet = helmets[rand.nextInt(helmets.length)];
+                    Material chest = chestplates[rand.nextInt(chestplates.length)];
+                    Material leg = leggings[rand.nextInt(leggings.length)];
+                    Material boot = boots[rand.nextInt(boots.length)];
+                    Material sword = swords[rand.nextInt(swords.length)];
+                    eq.setHelmet(helmet != null ? new ItemStack(helmet) : null);
+                    eq.setChestplate(chest != null ? new ItemStack(chest) : null);
+                    eq.setLeggings(leg != null ? new ItemStack(leg) : null);
+                    eq.setBoots(boot != null ? new ItemStack(boot) : null);
+                    eq.setItemInMainHand(sword != null ? new ItemStack(sword) : null);
+                }
+                org.bukkit.potion.PotionEffect[] buffs = {
+                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.INCREASE_DAMAGE, 20*60*5, 1),
+                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.SPEED, 20*60*5, 1),
+                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.FIRE_RESISTANCE, 20*60*5, 0),
+                    new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.DAMAGE_RESISTANCE, 20*60*5, 0)
+                };
+                int buffsCount = 1 + rand.nextInt(2);
+                java.util.List<Integer> used = new java.util.ArrayList<>();
+                for (int i = 0; i < buffsCount; i++) {
+                    int idx;
+                    do { idx = rand.nextInt(buffs.length); } while (used.contains(idx));
+                    used.add(idx);
+                    summoned.addPotionEffect(buffs[idx]);
+                }
+            }
             necromancyListener.addSummonedSoul(player, summoned);
             player.getWorld().spawnParticle(org.bukkit.Particle.SOUL, player.getLocation(), 30, 0.5, 1, 0.5, 0.1);
             player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WITHER_SPAWN, 1, 0.7f);
