@@ -142,7 +142,8 @@ public class PactManager {
         if (effectiveCostItem != null) {
             org.bukkit.inventory.ItemStack hand = player.getInventory().getItemInMainHand();
             if (hand == null || hand.getType() != effectiveCostItem || hand.getAmount() <= 0) {
-                player.sendMessage(ChatColor.RED + "You must hold a " + effectiveCostItem.name().replace("_", " ").toLowerCase() + " in your main hand to seal this pact.");
+                String itemName = effectiveCostItem.name().replace("_", " ").toLowerCase();
+                player.sendMessage(plugin.getFormattedMessage("must_hold_item").replace("%item%", itemName));
                 return false;
             }
             hand.setAmount(hand.getAmount() - 1);

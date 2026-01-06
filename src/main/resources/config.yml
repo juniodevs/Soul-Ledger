@@ -138,8 +138,8 @@ pacts:
 
 messages:
   en:
-      soul_recovered: "&aYou recovered 1 heart by losing your summoned soul."
-      soul_recovered_creeper: "&aYou recovered 1 heart by losing your summoned soul (Creeper exploded)."
+    soul_recovered: "&aYou recovered 1 heart by losing your summoned soul."
+    soul_recovered_creeper: "&aYou recovered 1 heart by losing your summoned soul (Creeper exploded)."
     prefix: "&5[Soul Ledger] "
     pact_sealed: "%prefix%&dYou sacrificed your vital essence for the %pact%&d pact!"
     pact_revoked: "%prefix%&7Your soul was purified in death."
@@ -163,9 +163,11 @@ messages:
     no_souls_summoned: "&7You have no souls summoned at the moment."
     souls_list_header: "&dSummoned souls:"
     soul_list_entry: "&5- &d%type% &7at &f%x%&7, &f%y%&7, &f%z%"
+    must_hold_item: "&cYou must hold a %item% in your main hand to seal this pact."
+    summon_type_error: "&cError identifying mob type: %type%"
   pt:
-      soul_recovered: "&aVocê recuperou 1 coração ao perder sua alma invocada."
-      soul_recovered_creeper: "&aVocê recuperou 1 coração ao perder sua alma invocada (Creeper explodiu)."
+    soul_recovered: "&aVocê recuperou 1 coração ao perder sua alma invocada."
+    soul_recovered_creeper: "&aVocê recuperou 1 coração ao perder sua alma invocada (Creeper explodiu)."
     prefix: "&5[Soul Ledger] "
     pact_sealed: "%prefix%&dVocê sacrificou sua essência vital pelo pacto %pact%&d!"
     pact_revoked: "%prefix%&7Sua alma foi purificada na morte."
@@ -189,3 +191,5 @@ messages:
     no_souls_summoned: "&7Você não possui almas invocadas no momento."
     souls_list_header: "&dAlmas invocadas:"
     soul_list_entry: "&5- &d%type% &7em &f%x%&7, &f%y%&7, &f%z%"
+    must_hold_item: "&cVocê deve segurar um(a) %item% na mão principal para selar este pacto."
+    summon_type_error: "&cErro ao identificar tipo de mob: %type%"

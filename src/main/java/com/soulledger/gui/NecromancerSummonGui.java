@@ -73,11 +73,7 @@ public class NecromancerSummonGui implements Listener {
 
         double maxHealth = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         if (maxHealth <= 2.0) {
-            if (plugin != null && plugin instanceof com.soulledger.SoulLedgerPlugin) {
-                player.sendMessage(((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("necromancer_low_health"));
-            } else {
-                player.sendMessage(ChatColor.RED + "You cannot summon souls with only 1 heart of life!");
-            }
+            player.sendMessage(((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("necromancer_low_health"));
             player.closeInventory();
             return;
         }
@@ -86,7 +82,7 @@ public class NecromancerSummonGui implements Listener {
         try {
             type = EntityType.valueOf(typeName);
         } catch (Exception e) {
-            player.sendMessage(ChatColor.RED + "Erro ao identificar tipo de mob: " + typeName);
+            player.sendMessage(((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("summon_type_error").replace("%type%", typeName));
             player.closeInventory();
             return;
         }
@@ -105,17 +101,9 @@ public class NecromancerSummonGui implements Listener {
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 if (!summoned.isDead()) summoned.setHealth(0.0);
             }, 20 * 30);
-            if (plugin != null && plugin instanceof com.soulledger.SoulLedgerPlugin) {
-                player.sendMessage(ChatColor.LIGHT_PURPLE + ((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("soul_summoned"));
-            } else {
-                player.sendMessage(ChatColor.LIGHT_PURPLE + "Você invocou uma alma! Sua vida máxima foi reduzida em 1 coração. Quando a alma morrer, você recupera.");
-            }
+            player.sendMessage(ChatColor.LIGHT_PURPLE + ((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("soul_summoned"));
         } catch (Exception ex) {
-            if (plugin != null && plugin instanceof com.soulledger.SoulLedgerPlugin) {
-                player.sendMessage(ChatColor.RED + ((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("summon_error") + ex.getMessage());
-            } else {
-                player.sendMessage(ChatColor.RED + "Erro ao invocar mob: " + ex.getMessage());
-            }
+            player.sendMessage(ChatColor.RED + ((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("summon_error") + ex.getMessage());
         }
     }
 }
