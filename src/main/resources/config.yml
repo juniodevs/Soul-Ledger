@@ -178,7 +178,7 @@ messages:
     prefix: "&5[Soul Ledger] "
     soul_staff_name: "Cajado das Almas"
     soul_staff_lore:
-      - "&7Clique para invocar a alma de mobs."
+      - "&7Clique para invocar a alma de mobs"
       - "&8(Necromante)"
     pact_sealed: "%prefix%&dVocê sacrificou sua essência vital pelo pacto %pact%&d!"
     pact_revoked: "%prefix%&7Sua alma foi purificada na morte."

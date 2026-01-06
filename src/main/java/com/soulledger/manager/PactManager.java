@@ -184,7 +184,9 @@ public class PactManager {
             org.bukkit.inventory.meta.ItemMeta meta = stick.getItemMeta();
             String lang = plugin.getConfig().getString("settings.language", "en");
             String name = plugin.getConfig().getString("messages." + lang + ".soul_staff_name", "Cajado das Almas");
-            java.util.List<String> lore = plugin.getConfig().getStringList("messages." + lang + ".soul_staff_lore");
+            java.util.List<String> loreRaw = plugin.getConfig().getStringList("messages." + lang + ".soul_staff_lore");
+            java.util.List<String> lore = new java.util.ArrayList<>();
+            for (String line : loreRaw) lore.add(org.bukkit.ChatColor.translateAlternateColorCodes('&', line));
             meta.setDisplayName(org.bukkit.ChatColor.DARK_PURPLE + name);
             meta.setLore(lore);
             meta.setUnbreakable(true);
