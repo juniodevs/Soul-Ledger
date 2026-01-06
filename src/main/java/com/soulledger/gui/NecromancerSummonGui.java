@@ -20,7 +20,10 @@ public class NecromancerSummonGui implements Listener {
     private final com.soulledger.listener.NecromancyListener necromancyListener;
     private final String GUI_TITLE = ChatColor.DARK_PURPLE + "Invocar Alma";
     private final List<EntityType> summonableTypes = Arrays.asList(
-        EntityType.ZOMBIE, EntityType.SKELETON, EntityType.CREEPER, EntityType.ENDERMAN
+        EntityType.ZOMBIE,
+        EntityType.HUSK,
+        EntityType.DROWNED,
+        EntityType.ZOMBIFIED_PIGLIN
     );
 
     public NecromancerSummonGui(Plugin plugin, com.soulledger.listener.NecromancyListener necromancyListener) {
@@ -36,18 +39,18 @@ public class NecromancerSummonGui implements Listener {
             switch (type) {
                 case ZOMBIE:
                     head = new ItemStack(Material.ZOMBIE_HEAD); break;
-                case SKELETON:
-                    head = new ItemStack(Material.SKELETON_SKULL); break;
-                case CREEPER:
-                    head = new ItemStack(Material.CREEPER_HEAD); break;
-                case ENDERMAN:
-                    head = new ItemStack(Material.ENDER_PEARL); break;
+                case HUSK:
+                    head = new ItemStack(Material.SAND); break;
+                case DROWNED:
+                    head = new ItemStack(Material.PRISMARINE_CRYSTALS); break;
+                case ZOMBIFIED_PIGLIN:
+                    head = new ItemStack(Material.GOLD_NUGGET); break;
                 default:
                     continue;
             }
             ItemMeta meta = head.getItemMeta();
             if (meta != null) {
-                meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Invocar " + type.name().toLowerCase());
+                meta.setDisplayName(ChatColor.LIGHT_PURPLE + "Summon " + type.name().toLowerCase());
                 meta.getPersistentDataContainer().set(
                     new org.bukkit.NamespacedKey(plugin, "summon_type"),
                     PersistentDataType.STRING,

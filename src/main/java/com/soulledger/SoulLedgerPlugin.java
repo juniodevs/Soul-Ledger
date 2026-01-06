@@ -28,7 +28,7 @@ public class SoulLedgerPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(necromancerSummonGui, this);
         getServer().getPluginManager().registerEvents(new com.soulledger.listener.NecromancerStickListener(), this);
         getServer().getPluginManager().registerEvents(new com.soulledger.listener.NecromancerStickUseListener(pactManager, necromancyListener), this);
-        getCommand("invocaralma").setExecutor(new com.soulledger.command.sub.SummonSoulSubCommand(necromancyListener, pactManager));
+        getCommand("summonsoul").setExecutor(new com.soulledger.command.sub.SummonSoulSubCommand(necromancyListener, pactManager));
 
         getCommand("soulledger").setExecutor(new PactCommand(this));
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
