@@ -27,7 +27,6 @@ public class PactCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ListSubCommand(plugin));
         registerSubCommand(new ReloadSubCommand(plugin));
         registerSubCommand(new GuiSubCommand(plugin));
-        // Registrar comando listsouls
         registerSubCommand(plugin.createListSoulsSubCommand());
     }
 

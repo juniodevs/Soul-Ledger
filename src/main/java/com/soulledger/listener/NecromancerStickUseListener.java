@@ -38,7 +38,6 @@ public class NecromancerStickUseListener implements Listener {
         ItemStack item = player.getInventory().getItemInMainHand();
         if (!isNecroStick(item)) return;
         if (!pactManager.hasNecromancyPact(player)) return;
-        // Abrir GUI de invocação
         necromancerSummonGui.open(player);
         event.setCancelled(true);
     }

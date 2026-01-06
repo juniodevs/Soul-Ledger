@@ -85,14 +85,11 @@ public class NecromancerSummonGui implements Listener {
             summoned.setCustomNameVisible(true);
             summoned.setRemoveWhenFarAway(true);
             summoned.setMetadata("necromancer_owner", new org.bukkit.metadata.FixedMetadataValue(plugin, player.getUniqueId().toString()));
-            // Adiciona à lista do necromante
             necromancyListener.addSummonedSoul(player, summoned);
-            // Efeitos visuais e redução de vida
             player.getWorld().spawnParticle(org.bukkit.Particle.SOUL, player.getLocation(), 30, 0.5, 1, 0.5, 0.1);
             player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WITHER_SPAWN, 1, 0.7f);
             double currentMax = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getBaseValue();
             player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.max(2, currentMax - 2));
-            // Morte após 30s
             plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                 if (!summoned.isDead()) summoned.setHealth(0.0);
             }, 20 * 30);

@@ -22,40 +22,46 @@ import java.util.List;
 public class NecromancyListener implements Listener {
     @EventHandler
     public void onEntityExplode(EntityExplodeEvent event) {
-        Entity entity = event.getEntity();
-        if (entity instanceof org.bukkit.entity.Creeper && entity.hasMetadata("necromancer_owner")) {
-            String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
-            Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
-            if (owner != null && owner.isOnline()) {
-                double currentMax = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-                owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.min(20.0, currentMax + 2));
-                owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada (Creeper explodiu).");
-                List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
-                if (list != null) {
-                    list.remove(entity);
+        try {
+            Entity entity = event.getEntity();
+            if (entity instanceof org.bukkit.entity.Creeper && entity.hasMetadata("necromancer_owner")) {
+                String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
+                Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
+                if (owner != null && owner.isOnline()) {
+                    double currentMax = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                    owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.min(20.0, currentMax + 2));
+                    owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada (Creeper explodiu).");
+                    List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
+                    if (list != null) {
+                        list.remove(entity);
+                    }
                 }
             }
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("[SoulLedger] Erro em onEntityExplode: " + e.getMessage());
         }
     }
 
             @EventHandler
             public void onEntityTarget(EntityTargetEvent event) {
-                if (!(event.getEntity() instanceof org.bukkit.entity.Zombie)) return;
-                if (!(event.getTarget() instanceof Player)) return;
-                LivingEntity entity = (LivingEntity) event.getEntity();
-                if (entity.hasMetadata("necromancer_owner")) {
-                    String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
-                    Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
-                    if (owner != null && owner.equals(event.getTarget())) {
-                        event.setCancelled(true);
-                    }
+        try {
+            if (!(event.getEntity() instanceof org.bukkit.entity.Zombie)) return;
+            if (!(event.getTarget() instanceof Player)) return;
+            LivingEntity entity = (LivingEntity) event.getEntity();
+            if (entity.hasMetadata("necromancer_owner")) {
+                String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
+                Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
+                if (owner != null && owner.equals(event.getTarget())) {
+                    event.setCancelled(true);
                 }
             }
-    // Mapeia jogador -> lista de almas invocadas
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("[SoulLedger] Erro em onEntityTarget: " + e.getMessage());
+        }
+            }
     private final Map<UUID, List<LivingEntity>> summonedSouls = new HashMap<>();
     private final PactManager pactManager;
     private final Plugin plugin;
-    // Guarda o último mob morto por cada jogador
     private final Map<UUID, EntityDeathEvent> lastMobDeath = new HashMap<>();
 
     public NecromancyListener(PactManager pactManager, Plugin plugin) {
@@ -65,57 +71,77 @@ public class NecromancyListener implements Listener {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent event) {
-        // Salva o último mob morto para necromancia
-        if (event.getEntity().getKiller() instanceof Player) {
-            Player killer = event.getEntity().getKiller();
-            if (pactManager.hasNecromancyPact(killer)) {
-                lastMobDeath.put(killer.getUniqueId(), event);
-            }
-        }
-        // Se for uma alma invocada, devolve o coração ao dono
-        LivingEntity entity = event.getEntity();
-        if (entity.hasMetadata("necromancer_owner")) {
-            String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
-            Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
-            if (owner != null && owner.isOnline()) {
-                double currentMax = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-                owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.min(20.0, currentMax + 2));
-                owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada.");
-                // Remove da lista de almas
-                List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
-                if (list != null) {
-                    list.remove(entity);
+        try {
+            if (event.getEntity().getKiller() instanceof Player) {
+                Player killer = event.getEntity().getKiller();
+                if (pactManager.hasNecromancyPact(killer)) {
+                    lastMobDeath.put(killer.getUniqueId(), event);
                 }
             }
+            LivingEntity entity = event.getEntity();
+            if (entity.hasMetadata("necromancer_owner")) {
+                String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
+                Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
+                if (owner != null && owner.isOnline()) {
+                    double currentMax = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                    owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.min(20.0, currentMax + 2));
+                    owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada.");
+                    List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
+                    if (list != null) {
+                        list.remove(entity);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("[SoulLedger] Erro em onEntityDeath: " + e.getMessage());
         }
     }
 
-    // Adiciona alma à lista do necromante
     public void addSummonedSoul(Player owner, LivingEntity soul) {
-        summonedSouls.computeIfAbsent(owner.getUniqueId(), k -> new java.util.ArrayList<>()).add(soul);
+        try {
+            summonedSouls.computeIfAbsent(owner.getUniqueId(), k -> new java.util.ArrayList<>()).add(soul);
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("[SoulLedger] Erro em addSummonedSoul: " + e.getMessage());
+        }
     }
 
-    // Lista as almas invocadas pelo jogador
     public java.util.List<LivingEntity> getSummonedSouls(Player owner) {
-        return summonedSouls.getOrDefault(owner.getUniqueId(), java.util.Collections.emptyList());
+        try {
+            return summonedSouls.getOrDefault(owner.getUniqueId(), java.util.Collections.emptyList());
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("[SoulLedger] Erro em getSummonedSouls: " + e.getMessage());
+            return java.util.Collections.emptyList();
+        }
     }
 
-    // Remove todas as almas do necromante (ex: ao perder pacto)
     public void removeAllSouls(Player owner) {
-        List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
-        if (list != null) {
-            for (LivingEntity soul : new java.util.ArrayList<>(list)) {
-                if (!soul.isDead()) soul.remove();
+        try {
+            List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
+            if (list != null) {
+                for (LivingEntity soul : new java.util.ArrayList<>(list)) {
+                    if (!soul.isDead()) soul.remove();
+                }
+                list.clear();
             }
-            list.clear();
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("[SoulLedger] Erro em removeAllSouls: " + e.getMessage());
         }
     }
 
     public EntityDeathEvent getLastMobDeath(Player player) {
-        return lastMobDeath.get(player.getUniqueId());
+        try {
+            return lastMobDeath.get(player.getUniqueId());
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("[SoulLedger] Erro em getLastMobDeath: " + e.getMessage());
+            return null;
+        }
     }
 
     public void clearLastMobDeath(Player player) {
-        lastMobDeath.remove(player.getUniqueId());
+        try {
+            lastMobDeath.remove(player.getUniqueId());
+        } catch (Exception e) {
+            Bukkit.getLogger().warning("[SoulLedger] Erro em clearLastMobDeath: " + e.getMessage());
+        }
     }
 }

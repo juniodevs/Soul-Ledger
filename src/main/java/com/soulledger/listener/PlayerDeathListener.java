@@ -25,9 +25,12 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        
         pactManager.revokeAllPacts(player);
-        
+        try {
+            plugin.necromancyListener.removeAllSouls(player);
+        } catch (Exception e) {
+            plugin.getLogger().warning("[SoulLedger] Erro ao remover almas do necromante: " + e.getMessage());
+        }
         player.sendMessage(plugin.getFormattedMessage("pact_revoked"));
     }
 

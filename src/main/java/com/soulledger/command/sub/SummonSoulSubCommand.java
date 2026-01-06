@@ -47,22 +47,17 @@ public class SummonSoulSubCommand implements TabExecutor {
         summoned.setCustomName(ChatColor.DARK_PURPLE + "Alma Invocada por " + player.getName());
         summoned.setCustomNameVisible(true);
         summoned.setRemoveWhenFarAway(true);
-        // Marca entidade como necromante e vincula ao jogador
         summoned.setMetadata("necromancer_owner", new org.bukkit.metadata.FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SoulLedger"), player.getUniqueId().toString()));
-        // Efeitos visuais
         player.getWorld().spawnParticle(org.bukkit.Particle.SOUL, player.getLocation(), 30, 0.5, 1, 0.5, 0.1);
         player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_WITHER_SPAWN, 1, 0.7f);
-        // Reduz vida máxima em 2 (1 coração)
         double currentMax = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.max(2, currentMax - 2));
-        // Remove mob após 30 segundos
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (!summoned.isDead()) summoned.remove();
             }
         }.runTaskLater(Bukkit.getPluginManager().getPlugin("SoulLedger"), 20 * 30);
-        // Limpa último mob
         necromancyListener.clearLastMobDeath(player);
         player.sendMessage(ChatColor.LIGHT_PURPLE + "Você invocou uma alma! Sua vida máxima foi reduzida em 1 coração. Quando a alma morrer, você recupera.");
         return true;

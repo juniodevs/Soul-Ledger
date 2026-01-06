@@ -9,7 +9,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SoulLedgerPlugin extends JavaPlugin {
 
-    private com.soulledger.listener.NecromancyListener necromancyListener;
+    public com.soulledger.listener.NecromancyListener necromancyListener;
 
     private PactManager pactManager;
     private PactGui pactGui;
@@ -21,13 +21,11 @@ public class SoulLedgerPlugin extends JavaPlugin {
         this.pactManager = new PactManager(this);
         this.pactGui = new PactGui(this);
 
-        // GUI de invocação do necromante
-        com.soulledger.gui.NecromancerSummonGui necromancerSummonGui = new com.soulledger.gui.NecromancerSummonGui(this, necromancyListener);
-        getServer().getPluginManager().registerEvents(necromancerSummonGui, this);
-
-        // Listener e comando de necromancia
         this.necromancyListener = new com.soulledger.listener.NecromancyListener(pactManager, this);
         getServer().getPluginManager().registerEvents(necromancyListener, this);
+
+        com.soulledger.gui.NecromancerSummonGui necromancerSummonGui = new com.soulledger.gui.NecromancerSummonGui(this, necromancyListener);
+        getServer().getPluginManager().registerEvents(necromancerSummonGui, this);
         getServer().getPluginManager().registerEvents(new com.soulledger.listener.NecromancerStickListener(), this);
         getServer().getPluginManager().registerEvents(new com.soulledger.listener.NecromancerStickUseListener(pactManager, necromancyListener), this);
         getCommand("invocaralma").setExecutor(new com.soulledger.command.sub.SummonSoulSubCommand(necromancyListener, pactManager));

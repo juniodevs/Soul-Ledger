@@ -22,7 +22,6 @@ import org.bukkit.ChatColor;
 
 public class PactManager {
 
-    // Verifica se o jogador tem o pacto de necromancia
     public boolean hasNecromancyPact(Player player) {
         List<String> pacts = getPlayerPacts(player);
         return pacts.stream().anyMatch(p -> p.equalsIgnoreCase("necromancia") || p.equalsIgnoreCase("necromancy"));
@@ -124,7 +123,6 @@ public class PactManager {
             return false;
         }
 
-        // Se o custo estiver OFF, não exige item
         if (globalCostItem != null && !globalCostItem.name().equalsIgnoreCase("OFF")) {
             if (player.getInventory().getItemInMainHand().getType() != globalCostItem) {
                 player.sendMessage(ChatColor.RED + "You must hold a " + globalCostItem.name().replace("_", " ").toLowerCase() + " in your main hand to seal this pact.");
@@ -163,7 +161,6 @@ public class PactManager {
 
         player.sendMessage(plugin.getFormattedMessage("pact_sealed").replace("%pact%", pact.getDisplayName()));
 
-        // Dar stick personalizado se for necromancy
         if (pactId.equalsIgnoreCase("necromancy") || pactId.equalsIgnoreCase("necromancia")) {
             org.bukkit.inventory.ItemStack stick = new org.bukkit.inventory.ItemStack(org.bukkit.Material.STICK);
             org.bukkit.inventory.meta.ItemMeta meta = stick.getItemMeta();
@@ -173,7 +170,6 @@ public class PactManager {
             lore.add(org.bukkit.ChatColor.DARK_GRAY + "(Necromancer)");
             meta.setLore(lore);
             meta.setUnbreakable(true);
-            // Adiciona Maldição do Desaparecimento
             meta.addEnchant(org.bukkit.enchantments.Enchantment.VANISHING_CURSE, 1, true);
             stick.setItemMeta(meta);
             stick.setAmount(1);
@@ -183,7 +179,6 @@ public class PactManager {
     }
 
     public void revokeAllPacts(Player player) {
-                // Remover stick necromancer
                 org.bukkit.inventory.PlayerInventory inv = player.getInventory();
                 for (org.bukkit.inventory.ItemStack item : inv.getContents()) {
                     if (item != null && item.getType() == org.bukkit.Material.STICK && item.hasItemMeta()) {
@@ -248,19 +243,16 @@ public class PactManager {
     }
 
     public void forceResetAttributes(Player player) {
-        // Explicitly reset common attributes that might stick
         for (Attribute attr : Attribute.values()) {
             try {
                 AttributeInstance instance = player.getAttribute(attr);
                 if (instance != null) {
                     instance.setBaseValue(instance.getDefaultValue());
-                    // Remove all modifiers too, just in case
                     instance.getModifiers().forEach(instance::removeModifier);
                 }
             } catch (Exception ignored) {}
         }
         
-        // Reset Capabilities that might have been desynced
         player.setWalkSpeed(0.2f);
         player.setFlySpeed(0.1f);
     }
