@@ -47,26 +47,21 @@ public class SealSubCommand implements SubCommand {
             sender.sendMessage(plugin.getFormattedMessage("only_players"));
             return true;
         }
-
         if (args.length < 2) {
             sender.sendMessage(plugin.getFormattedMessage("usage_seal"));
             return true;
         }
-
         Player player = (Player) sender;
         String pactId = args[1];
         Pact target = pactManager.getLoadedPacts().get(pactId);
-
         if (target == null) {
             sender.sendMessage(plugin.getFormattedMessage("pact_not_found"));
             return true;
         }
-
         if (!player.hasPermission(target.getPermission())) {
             sender.sendMessage(plugin.getFormattedMessage("no_permission"));
             return true;
         }
-
         pactManager.sealPact(player, pactId);
         return true;
     }

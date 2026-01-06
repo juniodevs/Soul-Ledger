@@ -165,6 +165,7 @@ messages:
     soul_list_entry: "&5- &d%type% &7at &f%x%&7, &f%y%&7, &f%z%"
     must_hold_item: "&cYou must hold a %item% in your main hand to seal this pact."
     summon_type_error: "&cError identifying mob type: %type%"
+    summoned_soul_name: "Summoned Soul by %player%"
   pt:
     soul_recovered: "&aVocê recuperou 1 coração ao perder sua alma invocada."
     soul_recovered_creeper: "&aVocê recuperou 1 coração ao perder sua alma invocada (Creeper explodiu)."
@@ -193,3 +194,4 @@ messages:
     soul_list_entry: "&5- &d%type% &7em &f%x%&7, &f%y%&7, &f%z%"
     must_hold_item: "&cVocê deve segurar um(a) %item% na mão principal para selar este pacto."
     summon_type_error: "&cErro ao identificar tipo de mob: %type%"
+    summoned_soul_name: "Alma Invocada por %player%"

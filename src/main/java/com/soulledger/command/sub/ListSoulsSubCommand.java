@@ -29,44 +29,24 @@ public class ListSoulsSubCommand implements SubCommand {
 
     @Override
     public boolean perform(CommandSender sender, String[] args) {
-        com.soulledger.SoulLedgerPlugin plugin = null;
-        if (sender.getServer().getPluginManager().getPlugin("SoulLedger") instanceof com.soulledger.SoulLedgerPlugin) {
-            plugin = (com.soulledger.SoulLedgerPlugin) sender.getServer().getPluginManager().getPlugin("SoulLedger");
-        }
+        com.soulledger.SoulLedgerPlugin plugin = (com.soulledger.SoulLedgerPlugin) sender.getServer().getPluginManager().getPlugin("SoulLedger");
         if (!(sender instanceof Player)) {
-            if (plugin != null) {
-                sender.sendMessage(plugin.getFormattedMessage("only_players"));
-            } else {
-                sender.sendMessage("Apenas jogadores.");
-            }
+            sender.sendMessage(plugin.getFormattedMessage("only_players"));
             return true;
         }
         Player player = (Player) sender;
         List<LivingEntity> souls = necromancyListener.getSummonedSouls(player);
         if (souls.isEmpty()) {
-            if (plugin != null) {
-                player.sendMessage(plugin.getFormattedMessage("no_souls_summoned"));
-            } else {
-                player.sendMessage(ChatColor.GRAY + "Você não possui almas invocadas no momento.");
-            }
+            player.sendMessage(plugin.getFormattedMessage("no_souls_summoned"));
             return true;
         }
-        if (plugin != null) {
-            player.sendMessage(plugin.getFormattedMessage("souls_list_header"));
-        } else {
-            player.sendMessage(ChatColor.LIGHT_PURPLE + "Almas invocadas:");
-        }
+        player.sendMessage(plugin.getFormattedMessage("souls_list_header"));
         for (LivingEntity soul : souls) {
-            String msg;
-            if (plugin != null) {
-                msg = plugin.getFormattedMessage("soul_list_entry")
-                        .replace("%type%", soul.getType().name())
-                        .replace("%x%", String.valueOf(soul.getLocation().getBlockX()))
-                        .replace("%y%", String.valueOf(soul.getLocation().getBlockY()))
-                        .replace("%z%", String.valueOf(soul.getLocation().getBlockZ()));
-            } else {
-                msg = ChatColor.DARK_PURPLE + "- " + soul.getType().name() + " em " + soul.getLocation().getBlockX() + ", " + soul.getLocation().getBlockY() + ", " + soul.getLocation().getBlockZ();
-            }
+            String msg = plugin.getFormattedMessage("soul_list_entry")
+                    .replace("%type%", soul.getType().name())
+                    .replace("%x%", String.valueOf(soul.getLocation().getBlockX()))
+                    .replace("%y%", String.valueOf(soul.getLocation().getBlockY()))
+                    .replace("%z%", String.valueOf(soul.getLocation().getBlockZ()));
             player.sendMessage(msg);
         }
         return true;

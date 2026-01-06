@@ -44,10 +44,6 @@ public class ListSubCommand implements SubCommand {
     public boolean perform(CommandSender sender, String[] args) {
         sender.sendMessage(plugin.getFormattedMessage("list_header"));
         String listFormat = plugin.getFormattedMessage("pact_list_format");
-        if (listFormat.startsWith("Message not found")) {
-            listFormat = "&7- &f%name% &7(Cost: &c%cost%&7)"; 
-        }
-
         for (Pact p : pactManager.getLoadedPacts().values()) {
             String line = listFormat
                     .replace("%name%", p.getDisplayName())

@@ -92,7 +92,8 @@ public class NecromancerSummonGui implements Listener {
         player.closeInventory();
         try {
             org.bukkit.entity.LivingEntity summoned = (org.bukkit.entity.LivingEntity) player.getWorld().spawnEntity(player.getLocation(), type);
-            summoned.setCustomName(ChatColor.DARK_PURPLE + "Alma Invocada por " + player.getName());
+            String customName = ((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("summoned_soul_name").replace("%player%", player.getName());
+            summoned.setCustomName(ChatColor.DARK_PURPLE + customName);
             summoned.setCustomNameVisible(true);
             summoned.setRemoveWhenFarAway(true);
             summoned.setMetadata("necromancer_owner", new org.bukkit.metadata.FixedMetadataValue(plugin, player.getUniqueId().toString()));

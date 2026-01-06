@@ -53,7 +53,8 @@ public class SummonSoulSubCommand implements TabExecutor {
         LivingEntity mob = (LivingEntity) lastDeath.getEntity();
         EntityType type = mob.getType();
         LivingEntity summoned = (LivingEntity) player.getWorld().spawnEntity(player.getLocation(), type);
-        summoned.setCustomName(ChatColor.DARK_PURPLE + "Alma Invocada por " + player.getName());
+        String customName = plugin.getFormattedMessage("summoned_soul_name").replace("%player%", player.getName());
+        summoned.setCustomName(ChatColor.DARK_PURPLE + customName);
         summoned.setCustomNameVisible(true);
         summoned.setRemoveWhenFarAway(true);
         summoned.setMetadata("necromancer_owner", new org.bukkit.metadata.FixedMetadataValue(Bukkit.getPluginManager().getPlugin("SoulLedger"), player.getUniqueId().toString()));
