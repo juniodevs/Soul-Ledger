@@ -138,6 +138,7 @@ pacts:
 
 messages:
   en:
+    necromancer_gui_title: "&5Summon Soul"
     soul_recovered: "&aYou recovered 1 heart by losing your summoned soul."
     soul_recovered_creeper: "&aYou recovered 1 heart by losing your summoned soul (Creeper exploded)."
     prefix: "&5[Soul Ledger] "
@@ -167,6 +168,7 @@ messages:
     summon_type_error: "&cError identifying mob type: %type%"
     summoned_soul_name: "Summoned Soul by %player%"
   pt:
+    necromancer_gui_title: "&5Invocar Alma"
     soul_recovered: "&aVocê recuperou 1 coração ao perder sua alma invocada."
     soul_recovered_creeper: "&aVocê recuperou 1 coração ao perder sua alma invocada (Creeper explodiu)."
     prefix: "&5[Soul Ledger] "

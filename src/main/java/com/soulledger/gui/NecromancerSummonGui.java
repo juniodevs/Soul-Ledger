@@ -18,7 +18,12 @@ import java.util.*;
 public class NecromancerSummonGui implements Listener {
     private final Plugin plugin;
     private final com.soulledger.listener.NecromancyListener necromancyListener;
-    private final String GUI_TITLE = ChatColor.DARK_PURPLE + "Invocar Alma";
+    private String getGuiTitle() {
+        var cfg = ((com.soulledger.SoulLedgerPlugin)plugin).getConfig();
+        String t = cfg.getString("messages." + cfg.getString("settings.language", "en") + ".necromancer_gui_title");
+        if (t == null) t = cfg.getString("messages.en.necromancer_gui_title", "&5Summon Soul");
+        return ChatColor.translateAlternateColorCodes('&', t);
+    }
     private final List<EntityType> summonableTypes = Arrays.asList(
         EntityType.ZOMBIE,
         EntityType.HUSK,
@@ -32,7 +37,7 @@ public class NecromancerSummonGui implements Listener {
     }
 
     public void open(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 9, GUI_TITLE);
+        Inventory inv = Bukkit.createInventory(null, 9, getGuiTitle());
         int slot = 0;
         for (EntityType type : summonableTypes) {
             ItemStack head;
@@ -65,7 +70,7 @@ public class NecromancerSummonGui implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals(GUI_TITLE)) return;
+        if (!event.getView().getTitle().equals(getGuiTitle())) return;
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player)) return;
         Player player = (Player) event.getWhoClicked();

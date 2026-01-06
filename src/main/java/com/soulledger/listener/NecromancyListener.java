@@ -50,6 +50,7 @@ public class NecromancyListener implements Listener {
             public void onEntityTarget(EntityTargetEvent event) {
         try {
             if (!(event.getTarget() instanceof Player)) return;
+            if (!(event.getEntity() instanceof LivingEntity)) return;
             LivingEntity entity = (LivingEntity) event.getEntity();
             if (entity.hasMetadata("necromancer_owner")) {
                 String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
@@ -83,6 +84,8 @@ public class NecromancyListener implements Listener {
             }
             LivingEntity entity = event.getEntity();
             if (entity.hasMetadata("necromancer_owner")) {
+                event.getDrops().clear();
+                event.setDroppedExp(0);
                 String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
                 Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
                 if (owner != null && owner.isOnline()) {
