@@ -138,6 +138,8 @@ pacts:
 
 messages:
   en:
+      soul_recovered: "&aYou recovered 1 heart by losing your summoned soul."
+      soul_recovered_creeper: "&aYou recovered 1 heart by losing your summoned soul (Creeper exploded)."
     prefix: "&5[Soul Ledger] "
     pact_sealed: "%prefix%&dYou sacrificed your vital essence for the %pact%&d pact!"
     pact_revoked: "%prefix%&7Your soul was purified in death."
@@ -157,7 +159,13 @@ messages:
     no_necromancy_pact: "&cYou do not have the necromancy pact."
     no_recent_mob_kill: "&cYou have not killed any mob recently."
     soul_summoned: "&dYou summoned a soul! Your max health was reduced by 1 heart. When the soul dies, you recover."
+    summon_error: "&dError to summon mob: "
+    no_souls_summoned: "&7You have no souls summoned at the moment."
+    souls_list_header: "&dSummoned souls:"
+    soul_list_entry: "&5- &d%type% &7at &f%x%&7, &f%y%&7, &f%z%"
   pt:
+      soul_recovered: "&aVocê recuperou 1 coração ao perder sua alma invocada."
+      soul_recovered_creeper: "&aVocê recuperou 1 coração ao perder sua alma invocada (Creeper explodiu)."
     prefix: "&5[Soul Ledger] "
     pact_sealed: "%prefix%&dVocê sacrificou sua essência vital pelo pacto %pact%&d!"
     pact_revoked: "%prefix%&7Sua alma foi purificada na morte."
@@ -177,3 +185,7 @@ messages:
     no_necromancy_pact: "&cVocê não possui o pacto de necromancia."
     no_recent_mob_kill: "&cVocê ainda não matou nenhum mob recentemente."
     soul_summoned: "&dVocê invocou uma alma! Sua vida máxima foi reduzida em 1 coração. Quando a alma morrer, você recupera."
+    summon_error: "&dErro ao invocar mob: "
+    no_souls_summoned: "&7Você não possui almas invocadas no momento."
+    souls_list_header: "&dAlmas invocadas:"
+    soul_list_entry: "&5- &d%type% &7em &f%x%&7, &f%y%&7, &f%z%"

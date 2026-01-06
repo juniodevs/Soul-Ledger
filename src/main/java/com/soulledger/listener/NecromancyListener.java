@@ -30,7 +30,11 @@ public class NecromancyListener implements Listener {
                 if (owner != null && owner.isOnline()) {
                     double currentMax = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
                     owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.min(20.0, currentMax + 2));
-                    owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada (Creeper explodiu).");
+                    if (plugin instanceof com.soulledger.SoulLedgerPlugin) {
+                        owner.sendMessage(org.bukkit.ChatColor.GREEN + ((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("soul_recovered_creeper"));
+                    } else {
+                        owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada (Creeper explodiu).");
+                    }
                     List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
                     if (list != null) {
                         list.remove(entity);
@@ -84,7 +88,11 @@ public class NecromancyListener implements Listener {
                 if (owner != null && owner.isOnline()) {
                     double currentMax = owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
                     owner.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.min(20.0, currentMax + 2));
-                    owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada.");
+                    if (plugin instanceof com.soulledger.SoulLedgerPlugin) {
+                        owner.sendMessage(org.bukkit.ChatColor.GREEN + ((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("soul_recovered"));
+                    } else {
+                        owner.sendMessage(org.bukkit.ChatColor.GREEN + "Você recuperou 1 coração ao perder sua alma invocada.");
+                    }
                     List<LivingEntity> list = summonedSouls.get(owner.getUniqueId());
                     if (list != null) {
                         list.remove(entity);
