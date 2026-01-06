@@ -86,6 +86,12 @@ public class NecromancyListener implements Listener {
             if (entity.hasMetadata("necromancer_owner")) {
                 event.getDrops().clear();
                 event.setDroppedExp(0);
+                entity.getWorld().spawnParticle(org.bukkit.Particle.SOUL, entity.getLocation(), 80, 1.2, 2, 1.2, 0.25);
+                entity.getWorld().spawnParticle(org.bukkit.Particle.SOUL_FIRE_FLAME, entity.getLocation(), 40, 1, 1.5, 1, 0.15);
+                entity.getWorld().spawnParticle(org.bukkit.Particle.ASH, entity.getLocation(), 20, 0.7, 1, 0.7, 0.02);
+                entity.getWorld().spawnParticle(org.bukkit.Particle.SPELL_WITCH, entity.getLocation(), 10, 0.5, 1, 0.5, 0.1);
+                entity.getWorld().playSound(entity.getLocation(), org.bukkit.Sound.BLOCK_BEACON_DEACTIVATE, 0.5f, 0.7f); 
+
                 String ownerId = entity.getMetadata("necromancer_owner").get(0).asString();
                 Player owner = Bukkit.getPlayer(UUID.fromString(ownerId));
                 if (owner != null && owner.isOnline()) {
