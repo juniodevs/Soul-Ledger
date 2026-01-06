@@ -1,0 +1,57 @@
+# Soul Ledger Configuration
+# Define available pacts here.
+
+settings:
+  language: en # Options: en, pt
+
+pacts:
+  glass_cannon:
+    display_name: "&cGlass Cannon"
+    cost_health: 10.0 # Reduces 5 hearts (Base health is 20.0)
+    permission: "soulledger.pact.glasscannon"
+    icon: DIAMOND_SWORD
+    effects:
+      - "INCREASE_DAMAGE:2" # Strength 3 (0-indexed)
+      - "SPEED:1"           # Speed 2
+  tank_soul:
+    display_name: "&9Steel Soul"
+    cost_health: 6.0 # Reduces 3 hearts
+    permission: "soulledger.pact.tanksoul"
+    icon: IRON_CHESTPLATE
+    effects:
+      - "DAMAGE_RESISTANCE:1"
+      - "SLOW:0"
+
+messages:
+  en:
+    prefix: "&5[Soul Ledger] "
+    pact_sealed: "%prefix%&dYou sacrificed your vital essence for the %pact%&d pact!"
+    pact_revoked: "%prefix%&7Your soul was purified in death."
+    already_has: "&cYou already have this pact."
+    insufficient_health: "&cYou do not have enough vital essence for this sacrifice."
+    no_permission: "&cYou do not share the arcane knowledge for this."
+    config_reloaded: "&aConfiguration reloaded."
+    list_header: "&5=== Available Pacts ==="
+    only_players: "&cOnly players can seal pacts."
+    usage_seal: "&cUsage: /sl seal <pact_id>"
+    pact_not_found: "&cPact not found."
+    unknown_command: "&cUnknown command."
+    help_list: "&e/sl list - List available pacts"
+    help_seal: "&e/sl seal <pact_id> - Seal a pact"
+    help_reload: "&c/sl reload - Reload config"
+  pt:
+    prefix: "&5[Soul Ledger] "
+    pact_sealed: "%prefix%&dVocê sacrificou sua essência vital pelo pacto %pact%&d!"
+    pact_revoked: "%prefix%&7Sua alma foi purificada na morte."
+    already_has: "&cVocê já possui este pacto."
+    insufficient_health: "&cVocê não tem essência vital suficiente para este sacrifício."
+    no_permission: "&cVocê não tem conhecimento arcano para este pacto."
+    config_reloaded: "&aConfiguração recarregada."
+    list_header: "&5=== Pactos Disponíveis ==="
+    only_players: "&cApenas jogadores podem selar pactos."
+    usage_seal: "&cUso: /sl seal <pact_id>"
+    pact_not_found: "&cPacto não encontrado."
+    unknown_command: "&cComando desconhecido."
+    help_list: "&e/sl list - Listar pactos disponíveis"
+    help_seal: "&e/sl seal <pact_id> - Selar um pacto"
+    help_reload: "&c/sl reload - Recarregar configurações"

@@ -1,0 +1,15 @@
+name: SoulLedger
+version: '${project.version}'
+main: com.soulledger.SoulLedgerPlugin
+api-version: 1.20
+authors: [juniodevs]
+description: An RPG plugin where life is traded for power.
+commands:
+  soulledger:
+    description: Main command for Soul Ledger
+    aliases: [sl]
+    usage: /<command> [args]
+permissions:
+  soulledger.admin:
+    description: Permission to reload config and manage
+    default: op
