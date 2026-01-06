@@ -18,6 +18,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.bukkit.ChatColor;
 
 public class PactManager {
 
@@ -25,6 +26,7 @@ public class PactManager {
     private final Map<String, Pact> loadedPacts = new HashMap<>();
     private final Map<UUID, List<String>> activePacts = new HashMap<>();
     private final NamespacedKey pdcKey;
+    private Material globalCostItem;
 
     public PactManager(SoulLedgerPlugin plugin) {
         this.plugin = plugin;
@@ -40,6 +42,9 @@ public class PactManager {
         loadedPacts.clear();
         ConfigurationSection section = plugin.getConfig().getConfigurationSection("pacts");
         if (section == null) return;
+        String globalCostItemName = plugin.getConfig().getString("settings.cost_item", "DIAMOND");
+        globalCostItem = Material.getMaterial(globalCostItemName.toUpperCase());
+        if (globalCostItem == null) globalCostItem = Material.DIAMOND;
 
         for (String key : section.getKeys(false)) {
             String displayName = section.getString(key + ".display_name", key);
@@ -51,6 +56,10 @@ public class PactManager {
                 plugin.getLogger().warning("Invalid icon material for pact " + key + ": " + iconName + ". Using NETHER_STAR.");
                 icon = Material.NETHER_STAR;
             }
+
+            String costItemName = section.getString(key + ".cost_item", "DIAMOND");
+            Material costItem = Material.getMaterial(costItemName.toUpperCase());
+            if (costItem == null) costItem = globalCostItem;
 
             Map<Attribute, Double> attributeModifiers = new HashMap<>();
             if (section.isConfigurationSection(key + ".attributes")) {
@@ -107,6 +116,15 @@ public class PactManager {
         if (currentBase <= pact.getHealthCost() + 1.0) {
             player.sendMessage(plugin.getFormattedMessage("insufficient_health"));
             return false;
+        }
+
+        // Se o custo estiver OFF, não exige item
+        if (globalCostItem != null && !globalCostItem.name().equalsIgnoreCase("OFF")) {
+            if (player.getInventory().getItemInMainHand().getType() != globalCostItem) {
+                player.sendMessage(ChatColor.RED + "You must hold a " + globalCostItem.name().replace("_", " ").toLowerCase() + " in your main hand to seal this pact.");
+                return false;
+            }
+            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
         }
 
         if (pact.getHealthCost() != 0) {
@@ -226,5 +244,9 @@ public class PactManager {
 
     public Map<String, Pact> getLoadedPacts() {
         return loadedPacts;
+    }
+
+    public Material getGlobalCostItem() {
+        return globalCostItem;
     }
 }

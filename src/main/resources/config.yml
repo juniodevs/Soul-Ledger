@@ -3,6 +3,8 @@
 
 settings:
   language: en # Options: en, pt
+  # Set cost_item to OFF to disable item cost for pacts
+  cost_item: DIAMOND
 
 pacts:
   glass_cannon:

@@ -53,4 +53,8 @@ public class Pact {
     public Material getIcon() {
         return icon;
     }
+
+    public Material getCostItem() {
+        return null;
+    }
 }

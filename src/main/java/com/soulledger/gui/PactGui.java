@@ -37,19 +37,19 @@ public class PactGui implements Listener {
     }
 
     public void openPactMenu(Player player) {
-        int size = 9 * 4; // 36 slots for a more spacious layout
-        if (pactManager.getLoadedPacts().size() > 27) size = 54;
-
+        int size = 54; // Double chest size
         Inventory inv = Bukkit.createInventory(null, size, ChatColor.DARK_PURPLE + "❖ Soul Ledger ❖");
-
-        int slot = 10;
+        int[] slots = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32, 34, 37, 39, 41, 43};
+        int i = 0;
         for (Pact pact : pactManager.getLoadedPacts().values()) {
+            if (i >= slots.length) break;
             ItemStack item = new ItemStack(pact.getIcon());
             ItemMeta meta = item.getItemMeta();
             if (meta != null) {
                 meta.setDisplayName(ChatColor.LIGHT_PURPLE + "✦ " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', pact.getDisplayName()));
                 List<String> lore = new ArrayList<>();
                 lore.add(ChatColor.GRAY + "Sacrifice: " + ChatColor.RED + (pact.getHealthCost() > 0 ? "-" : "+") + Math.abs((int)pact.getHealthCost()) + " HP");
+                lore.add(ChatColor.GRAY + "Required: " + ChatColor.AQUA + pactManager.getGlobalCostItem().name().replace("_", " ").toLowerCase());
                 if (!pact.getAttributeModifiers().isEmpty()) {
                     lore.add("");
                     lore.add(ChatColor.GOLD + "Attributes:");
@@ -73,22 +73,18 @@ public class PactGui implements Listener {
                 meta.getPersistentDataContainer().set(pactKey, PersistentDataType.STRING, pact.getId());
                 item.setItemMeta(meta);
             }
-            inv.setItem(slot, item);
-            slot++;
-            if (slot == 17 || slot == 26 || slot == 35) slot += 2; // Decorative spacing
+            inv.setItem(slots[i], item);
+            i++;
         }
-
-        // Decorative border
         ItemStack border = new ItemStack(Material.PURPLE_STAINED_GLASS_PANE);
         ItemMeta borderMeta = border.getItemMeta();
         if (borderMeta != null) {
             borderMeta.setDisplayName(" ");
             border.setItemMeta(borderMeta);
         }
-        for (int i = 0; i < size; i++) {
-            if (inv.getItem(i) == null) inv.setItem(i, border);
+        for (int j = 0; j < size; j++) {
+            if (inv.getItem(j) == null) inv.setItem(j, border);
         }
-
         player.openInventory(inv);
     }
 
