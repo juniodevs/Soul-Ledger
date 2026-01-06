@@ -37,7 +37,7 @@ public class PactGui implements Listener {
     }
 
     public void openPactMenu(Player player) {
-        int size = 54; // Double chest size
+        int size = 54;
         Inventory inv = Bukkit.createInventory(null, size, ChatColor.DARK_PURPLE + "❖ Soul Ledger ❖");
         int[] slots = {10, 12, 14, 16, 19, 21, 23, 25, 28, 30, 32, 34, 37, 39, 41, 43};
         int i = 0;

@@ -72,7 +72,6 @@ public class PactManager {
             if (costItemName != null) costItemName = costItemName.trim();
             Material costItem;
             if (costItemName == null || costItemName.isEmpty()) {
-                // No per-pact value -> inherit global setting (which may be null/off)
                 costItem = globalCostItem;
             } else if ("OFF".equalsIgnoreCase(costItemName)) {
                 costItem = null;
@@ -194,6 +193,16 @@ public class PactManager {
             stick.setItemMeta(meta);
             stick.setAmount(1);
             player.getInventory().addItem(stick);
+        }
+        if (pactId.equalsIgnoreCase("flame")) {
+            org.bukkit.inventory.ItemStack flameStaff = new org.bukkit.inventory.ItemStack(org.bukkit.Material.BLAZE_ROD);
+            org.bukkit.inventory.meta.ItemMeta meta = flameStaff.getItemMeta();
+            meta.setDisplayName(org.bukkit.ChatColor.GOLD + "Flame Staff");
+            meta.setUnbreakable(true);
+            meta.addEnchant(org.bukkit.enchantments.Enchantment.VANISHING_CURSE, 1, true);
+            flameStaff.setItemMeta(meta);
+            flameStaff.setAmount(1);
+            player.getInventory().addItem(flameStaff);
         }
         return true;
     }

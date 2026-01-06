@@ -16,6 +16,18 @@ pacts:
       - "REGENERATION:0"
       - "NIGHT_VISION:0"
 
+  flame:
+    display_name: "&6Flame Pact"
+    cost_health: 8.0
+    permission: "soulledger.pact.flame"
+    icon: BLAZE_ROD
+    effects:
+      - "FIRE_RESISTANCE:0"
+    item:
+      name: "&cFlame Staff"
+      material: BLAZE_ROD
+      unbreakable: true
+
   # glass_cannon:
   #   display_name: "&cGlass Cannon"
   #   cost_health: 10.0 # Reduces 5 hearts (Base health is 20.0)

@@ -22,7 +22,7 @@ public class NecromancerStickListener implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         if (isNecroStick(event.getItemDrop().getItemStack())) {
-            event.getItemDrop().remove(); // destrói o item ao invés de droppar
+            event.getItemDrop().remove();
             event.setCancelled(true);
         }
     }

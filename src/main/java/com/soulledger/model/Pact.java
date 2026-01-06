@@ -12,7 +12,7 @@ public class Pact {
     private final String displayName;
     private final double healthCost;
     private final org.bukkit.Material costItem;
-    private final Map<Attribute, Double> attributeModifiers; // Attribute -> Change Amount
+    private final Map<Attribute, Double> attributeModifiers;
     private final List<PotionEffect> effects;
     private final String permission;
     private final Material icon;

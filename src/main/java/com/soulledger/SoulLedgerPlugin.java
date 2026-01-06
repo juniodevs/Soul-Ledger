@@ -33,6 +33,8 @@ public class SoulLedgerPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
         getServer().getPluginManager().registerEvents(pactGui, this);
 
+        getServer().getPluginManager().registerEvents(new com.soulledger.listener.FlameStaffListener(), this);
+
         getLogger().info("Soul Ledger started. Death awaits.");
     }
 
