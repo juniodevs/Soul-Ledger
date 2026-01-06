@@ -153,6 +153,10 @@ messages:
     help_list: "&e/sl list - List available pacts"
     help_seal: "&e/sl seal <pact_id> - Seal a pact"
     help_reload: "&c/sl reload - Reload config"
+    necromancer_low_health: "&cYou cannot summon souls with only 1 heart of life!"
+    no_necromancy_pact: "&cYou do not have the necromancy pact."
+    no_recent_mob_kill: "&cYou have not killed any mob recently."
+    soul_summoned: "&dYou summoned a soul! Your max health was reduced by 1 heart. When the soul dies, you recover."
   pt:
     prefix: "&5[Soul Ledger] "
     pact_sealed: "%prefix%&dVocê sacrificou sua essência vital pelo pacto %pact%&d!"
@@ -169,3 +173,7 @@ messages:
     help_list: "&e/sl list - Listar pactos disponíveis"
     help_seal: "&e/sl seal <pact_id> - Selar um pacto"
     help_reload: "&c/sl reload - Recarregar configurações"
+    necromancer_low_health: "&cVocê não pode invocar almas com apenas 1 coração de vida!"
+    no_necromancy_pact: "&cVocê não possui o pacto de necromancia."
+    no_recent_mob_kill: "&cVocê ainda não matou nenhum mob recentemente."
+    soul_summoned: "&dVocê invocou uma alma! Sua vida máxima foi reduzida em 1 coração. Quando a alma morrer, você recupera."

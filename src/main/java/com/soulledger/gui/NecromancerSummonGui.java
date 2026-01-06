@@ -70,6 +70,17 @@ public class NecromancerSummonGui implements Listener {
         if (clicked == null || !clicked.hasItemMeta()) return;
         ItemMeta meta = clicked.getItemMeta();
         if (!meta.getPersistentDataContainer().has(new org.bukkit.NamespacedKey(plugin, "summon_type"), PersistentDataType.STRING)) return;
+
+        double maxHealth = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        if (maxHealth <= 2.0) {
+            if (plugin instanceof com.soulledger.SoulLedgerPlugin) {
+                player.sendMessage(((com.soulledger.SoulLedgerPlugin)plugin).getFormattedMessage("necromancer_low_health"));
+            } else {
+                player.sendMessage(ChatColor.RED + "You cannot summon souls with only 1 heart of life!");
+            }
+            player.closeInventory();
+            return;
+        }
         String typeName = meta.getPersistentDataContainer().get(new org.bukkit.NamespacedKey(plugin, "summon_type"), PersistentDataType.STRING);
         EntityType type;
         try {

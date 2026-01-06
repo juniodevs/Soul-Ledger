@@ -27,18 +27,43 @@ public class SummonSoulSubCommand implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        com.soulledger.SoulLedgerPlugin plugin = null;
+        if (sender.getServer().getPluginManager().getPlugin("SoulLedger") instanceof com.soulledger.SoulLedgerPlugin) {
+            plugin = (com.soulledger.SoulLedgerPlugin) sender.getServer().getPluginManager().getPlugin("SoulLedger");
+        }
         if (!(sender instanceof Player)) {
-            sender.sendMessage("Comando apenas para jogadores.");
+            if (plugin != null) {
+                sender.sendMessage(plugin.getFormattedMessage("only_players"));
+            } else {
+                sender.sendMessage("Comando apenas para jogadores.");
+            }
             return true;
         }
         Player player = (Player) sender;
         if (!pactManager.hasNecromancyPact(player)) {
-            player.sendMessage(ChatColor.RED + "Você não possui o pacto de necromancia.");
+            if (plugin != null) {
+                player.sendMessage(plugin.getFormattedMessage("no_necromancy_pact"));
+            } else {
+                player.sendMessage(ChatColor.RED + "Você não possui o pacto de necromancia.");
+            }
+            return true;
+        }
+        double maxHealth = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+        if (maxHealth <= 2.0) {
+            if (plugin != null) {
+                player.sendMessage(plugin.getFormattedMessage("necromancer_low_health"));
+            } else {
+                player.sendMessage(ChatColor.RED + "You cannot summon souls with only 1 heart of life!");
+            }
             return true;
         }
         EntityDeathEvent lastDeath = necromancyListener.getLastMobDeath(player);
         if (lastDeath == null) {
-            player.sendMessage(ChatColor.RED + "Você ainda não matou nenhum mob recentemente.");
+            if (plugin != null) {
+                player.sendMessage(plugin.getFormattedMessage("no_recent_mob_kill"));
+            } else {
+                player.sendMessage(ChatColor.RED + "Você ainda não matou nenhum mob recentemente.");
+            }
             return true;
         }
         LivingEntity mob = (LivingEntity) lastDeath.getEntity();
@@ -59,7 +84,11 @@ public class SummonSoulSubCommand implements TabExecutor {
             }
         }.runTaskLater(Bukkit.getPluginManager().getPlugin("SoulLedger"), 20 * 30);
         necromancyListener.clearLastMobDeath(player);
-        player.sendMessage(ChatColor.LIGHT_PURPLE + "Você invocou uma alma! Sua vida máxima foi reduzida em 1 coração. Quando a alma morrer, você recupera.");
+        if (plugin != null) {
+            player.sendMessage(plugin.getFormattedMessage("soul_summoned"));
+        } else {
+            player.sendMessage(ChatColor.LIGHT_PURPLE + "&dYou summoned a soul! Your max health was reduced by 1 heart. When the soul dies, you recover.");
+        }
         return true;
     }
 
