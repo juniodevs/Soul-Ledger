@@ -12,7 +12,8 @@ pacts:
     icon: DIAMOND_SWORD
     effects:
       - "INCREASE_DAMAGE:2" # Strength 3 (0-indexed)
-      - "SPEED:1"           # Speed 2
+      - "SPEED:1"           # Speed 
+      
   tank_soul:
     display_name: "&9Steel Soul"
     cost_health: 6.0 # Reduces 3 hearts
@@ -21,6 +22,108 @@ pacts:
     effects:
       - "DAMAGE_RESISTANCE:1"
       - "SLOW:0"
+  
+  shadow_walker:
+    display_name: "&8Shadow Walker"
+    cost_health: 17.0
+    permission: "soulledger.pact.shadowwalker"
+    icon: ENDER_PEARL
+    effects:
+      - "INVISIBILITY:0"
+      - "SPEED:2"
+      - "NIGHT_VISION:0"
+
+  berserker_rage:
+    display_name: "&4Berserker's Rage"
+    cost_health: 14.0 # High risk: Reduces 7 hearts (leaves 3 base hearts)
+    permission: "soulledger.pact.berserker"
+    icon: NETHERITE_AXE
+    effects:
+      - "INCREASE_DAMAGE:3" # Strength 4
+      - "FAST_DIGGING:1"    # Haste 2
+      - "REGENERATION:0"    # Regen 1 to compensate low HP slightly
+    attributes:
+       GENERIC_KNOCKBACK_RESISTANCE: 1.0 # Cannot be knocked back
+
+  goliath_bond:
+    display_name: "&6Goliath's Bond"
+    cost_health: -10.0 # Negative cost adds hearts! Increases health by 5 hearts (Total 15 hearts)
+    permission: "soulledger.pact.goliath"
+    icon: GOLDEN_APPLE
+    effects:
+      - "SLOW:1"           # Slowness 2
+      - "WEAKNESS:0"       # Weakness 1
+      - "HUNGER:1"         # Hunger 2 (Consumes food faster)
+    attributes:
+       GENERIC_ATTACK_KNOCKBACK: 2.0 # Hits send enemies flying
+
+  miner_greed:
+    display_name: "&eMiner's Greed"
+    cost_health: 8.0 # Reduces 4 hearts
+    permission: "soulledger.pact.miner"
+    icon: GOLDEN_PICKAXE
+    effects:
+      - "FAST_DIGGING:2"   # Haste 3
+      - "NIGHT_VISION:0"
+      - "LUCK:1"           # Luck 2
+
+  void_touched:
+    display_name: "&5Void Touched"
+    cost_health: 6.0 # Extreme
+    permission: "soulledger.pact.void"
+    icon: CHORUS_FRUIT
+    attributes:
+       GENERIC_KNOCKBACK_RESISTANCE: -0.5 # You fly easily
+       GENERIC_GRAVITY: 0.04 # Low gravity!
+    effects:
+      - "JUMP:3"
+
+  ocean_depths:
+    display_name: "&bOcean's Depths"
+    cost_health: 6.0 # Reduces 3 hearts
+    permission: "soulledger.pact.ocean"
+    icon: HEART_OF_THE_SEA
+    effects:
+      - "WATER_BREATHING:0"
+      - "NIGHT_VISION:0"
+      - "DOLPHINS_GRACE:0"
+      - "CONDUIT_POWER:0"
+
+  eternal_feast:
+    display_name: "&dEternal Feast"
+    cost_health: 12.0 # Reduces 6 hearts
+    permission: "soulledger.pact.feast"
+    icon: COOKED_BEEF
+    effects:
+      - "SATURATION:0" # Keeps food bar full (Infinite food)
+      - "REGENERATION:0"
+
+  infernal_walker:
+    display_name: "&6Infernal Walker"
+    cost_health: 8.0 # Reduces 4 hearts
+    permission: "soulledger.pact.infernal"
+    icon: MAGMA_CREAM
+    effects:
+      - "FIRE_RESISTANCE:0"
+      - "INCREASE_DAMAGE:1"
+
+  phantom_step:
+    display_name: "&fPhantom Step"
+    cost_health: 4.0 # Reduces 2 hearts
+    permission: "soulledger.pact.phantom"
+    icon: PHANTOM_MEMBRANE
+    effects:
+      - "SLOW_FALLING:0"
+      - "SPEED:2"
+
+  obsidian_skin:
+    display_name: "&8Obsidian Skin"
+    cost_health: 2.0 # Reduces 1 heart
+    permission: "soulledger.pact.obsidian"
+    icon: OBSIDIAN
+    effects:
+      - "DAMAGE_RESISTANCE:1" # Resistance 2
+      - "SLOW:1"              # Slowness 2
 
 messages:
   en:

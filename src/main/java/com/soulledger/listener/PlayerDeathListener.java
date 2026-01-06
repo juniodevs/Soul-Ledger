@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class PlayerDeathListener implements Listener {
 
@@ -28,6 +29,16 @@ public class PlayerDeathListener implements Listener {
         pactManager.revokeAllPacts(player);
         
         player.sendMessage(plugin.getFormattedMessage("pact_revoked"));
+    }
+
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        Player player = event.getPlayer();
+        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+            if (pactManager.getPlayerPacts(player).isEmpty()) {
+                 pactManager.forceResetAttributes(player);
+            }
+        }, 5L);
     }
 
     @EventHandler

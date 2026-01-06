@@ -30,6 +30,11 @@ public class PactManager {
         this.plugin = plugin;
         this.pdcKey = new NamespacedKey(plugin, "active_pacts");
         loadPactsFromConfig();
+        
+        // Reload active pacts for online players (in case of /reload)
+        for (Player p : plugin.getServer().getOnlinePlayers()) {
+            restorePacts(p);
+        }
     }
 
     public void loadPactsFromConfig() {
@@ -46,6 +51,20 @@ public class PactManager {
             if (icon == null) {
                 plugin.getLogger().warning("Invalid icon material for pact " + key + ": " + iconName + ". Using NETHER_STAR.");
                 icon = Material.NETHER_STAR;
+            }
+
+            Map<Attribute, Double> attributeModifiers = new HashMap<>();
+            if (section.isConfigurationSection(key + ".attributes")) {
+                ConfigurationSection attrSection = section.getConfigurationSection(key + ".attributes");
+                for (String attrKey : attrSection.getKeys(false)) {
+                    try {
+                        Attribute attribute = Attribute.valueOf(attrKey.toUpperCase());
+                        double value = attrSection.getDouble(attrKey);
+                        attributeModifiers.put(attribute, value);
+                    } catch (IllegalArgumentException e) {
+                        plugin.getLogger().warning("Invalid attribute " + attrKey + " in pact " + key);
+                    }
+                }
             }
 
             List<String> rawEffects = section.getStringList(key + ".effects");
@@ -66,7 +85,7 @@ public class PactManager {
                 }
             }
 
-            Pact pact = new Pact(key, displayName, cost, effects, permission, icon);
+            Pact pact = new Pact(key, displayName, cost, attributeModifiers, effects, permission, icon);
             loadedPacts.put(key, pact);
         }
         plugin.getLogger().info("Loaded " + loadedPacts.size() + " pacts.");
@@ -91,7 +110,16 @@ public class PactManager {
             return false;
         }
 
-        healthAttr.setBaseValue(currentBase - pact.getHealthCost());
+        if (pact.getHealthCost() != 0) {
+            healthAttr.setBaseValue(currentBase - pact.getHealthCost());
+        }
+
+        for (Map.Entry<Attribute, Double> entry : pact.getAttributeModifiers().entrySet()) {
+            AttributeInstance instance = player.getAttribute(entry.getKey());
+            if (instance != null) {
+                instance.setBaseValue(instance.getBaseValue() + entry.getValue());
+            }
+        }
         
         for (PotionEffect effect : pact.getEffects()) {
             player.addPotionEffect(effect);
@@ -115,15 +143,28 @@ public class PactManager {
     public void revokeAllPacts(Player player) {
         AttributeInstance healthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (healthAttr != null) {
-            healthAttr.setBaseValue(20.0);
+            healthAttr.setBaseValue(healthAttr.getDefaultValue());
         }
+
+        for (Attribute attr : Attribute.values()) {
+            try {
+                if (attr == Attribute.GENERIC_MAX_HEALTH) continue;
+                AttributeInstance instance = player.getAttribute(attr);
+                if (instance != null) {
+                    instance.setBaseValue(instance.getDefaultValue());
+                    instance.getModifiers().forEach(instance::removeModifier);
+                }
+            } catch (Exception ignored) {}
+        }
+
+        player.setWalkSpeed(0.2f);
+        player.setFlySpeed(0.1f);
 
         for (PotionEffect effect : player.getActivePotionEffects()) {
              player.removePotionEffect(effect.getType());
         }
 
         activePacts.remove(player.getUniqueId());
-        
         player.getPersistentDataContainer().remove(pdcKey);
     }
 
@@ -150,8 +191,26 @@ public class PactManager {
         }
     }
 
-    private List<String> getPlayerPacts(Player player) {
+    public List<String> getPlayerPacts(Player player) {
         return activePacts.getOrDefault(player.getUniqueId(), new ArrayList<>());
+    }
+
+    public void forceResetAttributes(Player player) {
+        // Explicitly reset common attributes that might stick
+        for (Attribute attr : Attribute.values()) {
+            try {
+                AttributeInstance instance = player.getAttribute(attr);
+                if (instance != null) {
+                    instance.setBaseValue(instance.getDefaultValue());
+                    // Remove all modifiers too, just in case
+                    instance.getModifiers().forEach(instance::removeModifier);
+                }
+            } catch (Exception ignored) {}
+        }
+        
+        // Reset Capabilities that might have been desynced
+        player.setWalkSpeed(0.2f);
+        player.setFlySpeed(0.1f);
     }
 
     private void saveToPDC(Player player, List<String> pacts) {
