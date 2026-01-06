@@ -26,7 +26,7 @@ public class NecromancerStickUseListener implements Listener {
     }
 
     private boolean isNecroStick(ItemStack item) {
-        if (item == null || item.getType() != org.bukkit.Material.STICK || !item.hasItemMeta()) return false;
+        if (item == null || item.getType() != org.bukkit.Material.BOOK || !item.hasItemMeta()) return false;
         ItemMeta meta = item.getItemMeta();
         String lang = org.bukkit.Bukkit.getPluginManager().getPlugin("SoulLedger").getConfig().getString("settings.language", "en");
         String name = org.bukkit.Bukkit.getPluginManager().getPlugin("SoulLedger").getConfig().getString("messages." + lang + ".soul_staff_name", "Cajado das Almas");

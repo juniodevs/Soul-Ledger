@@ -12,28 +12,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class NecromancerStickListener implements Listener {
     private boolean isNecroStick(ItemStack item) {
-        if (item == null || item.getType() != Material.STICK || !item.hasItemMeta()) return false;
+        if (item == null || item.getType() != Material.BOOK || !item.hasItemMeta()) return false;
         ItemMeta meta = item.getItemMeta();
         String lang = org.bukkit.Bukkit.getPluginManager().getPlugin("SoulLedger").getConfig().getString("settings.language", "en");
         String name = org.bukkit.Bukkit.getPluginManager().getPlugin("SoulLedger").getConfig().getString("messages." + lang + ".soul_staff_name", "Cajado das Almas");
         return meta.hasDisplayName() && meta.getDisplayName().contains(name);
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (isNecroStick(event.getCurrentItem())) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
-    public void onInventoryDrag(InventoryDragEvent event) {
-        for (ItemStack item : event.getNewItems().values()) {
-            if (isNecroStick(item)) {
-                event.setCancelled(true);
-                break;
-            }
-        }
     }
 
     @EventHandler

@@ -180,7 +180,7 @@ public class PactManager {
         player.sendMessage(plugin.getFormattedMessage("pact_sealed").replace("%pact%", pact.getDisplayName()));
 
         if (pactId.equalsIgnoreCase("necromancy") || pactId.equalsIgnoreCase("necromancia")) {
-            org.bukkit.inventory.ItemStack stick = new org.bukkit.inventory.ItemStack(org.bukkit.Material.STICK);
+            org.bukkit.inventory.ItemStack stick = new org.bukkit.inventory.ItemStack(org.bukkit.Material.BOOK);
             org.bukkit.inventory.meta.ItemMeta meta = stick.getItemMeta();
             String lang = plugin.getConfig().getString("settings.language", "en");
             String name = plugin.getConfig().getString("messages." + lang + ".soul_staff_name", "Cajado das Almas");
