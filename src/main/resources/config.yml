@@ -355,7 +355,7 @@ messages:
     must_hold_item: "&cYou must hold a %item% in your main hand to seal this pact."
     summon_type_error: "&cError identifying mob type: %type%"
     summoned_soul_name: "Summoned Soul by %player%"
-    predator_buff_message: "&a[Killed %mob%]: %effect% %level% for %duration%s"
+    predator_buff_message: "&a[Killed %mob%]: %effects%"
   pt:
     necromancer_gui_title: "&5Invocar Alma"
     soul_recovered: "&aVocê recuperou 1 coração ao perder sua alma invocada."
@@ -390,3 +390,4 @@ messages:
     must_hold_item: "&cVocê deve segurar um(a) %item% na mão principal para selar este pacto."
     summon_type_error: "&cErro ao identificar tipo de mob: %type%"
     summoned_soul_name: "Alma Invocada por %player%"
+    predator_buff_message: "&a[Morto %mob%]: %effects%"

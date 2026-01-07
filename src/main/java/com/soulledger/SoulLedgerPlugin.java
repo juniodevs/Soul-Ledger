@@ -2,52 +2,48 @@ package com.soulledger;
 
 import com.soulledger.command.PactCommand;
 import com.soulledger.gui.PactGui;
+import com.soulledger.gui.NecromancerSummonGui;
+import com.soulledger.listener.GuiListener;
+import com.soulledger.listener.ItemListener;
+import com.soulledger.listener.MobListener;
 import com.soulledger.listener.PlayerDeathListener;
 import com.soulledger.manager.PactManager;
-import org.bukkit.ChatColor;
+import com.soulledger.util.ColorUtil;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SoulLedgerPlugin extends JavaPlugin {
 
-    private com.soulledger.listener.MobListener mobListener;
-    private com.soulledger.gui.NecromancerSummonGui necromancerSummonGui;
+    private MobListener mobListener;
+    private NecromancerSummonGui necromancerSummonGui;
     private PactManager pactManager;
     private PactGui pactGui;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        saveResource("mob_buffs.yml", false);
 
         this.pactManager = new PactManager(this);
         this.pactGui = new PactGui(this);
-        this.mobListener = new com.soulledger.listener.MobListener(this);
-        this.necromancerSummonGui = new com.soulledger.gui.NecromancerSummonGui(this, mobListener);
+        this.mobListener = new MobListener(this);
+        this.necromancerSummonGui = new NecromancerSummonGui(this, mobListener);
 
-        getServer().getPluginManager().registerEvents(mobListener, this);
-        getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
-
-        getServer().getPluginManager().registerEvents(new com.soulledger.listener.ItemListener(this), this);
-        getServer().getPluginManager().registerEvents(new com.soulledger.listener.GuiListener(this), this);
-
-        getCommand("soulledger").setExecutor(new PactCommand(this));
+        registerEvents();
+        registerCommands();
 
         getLogger().info("Soul Ledger started. Death awaits.");
     }
 
-    public com.soulledger.command.sub.ListSoulsSubCommand createListSoulsSubCommand() {
-        return new com.soulledger.command.sub.ListSoulsSubCommand(mobListener);
+    private void registerEvents() {
+        var pm = getServer().getPluginManager();
+        pm.registerEvents(mobListener, this);
+        pm.registerEvents(new PlayerDeathListener(this), this);
+        pm.registerEvents(new ItemListener(this), this);
+        pm.registerEvents(new GuiListener(this), this);
     }
 
-    public com.soulledger.listener.MobListener getMobListener() {
-        return mobListener;
-    }
-
-    public com.soulledger.gui.NecromancerSummonGui getNecromancerSummonGui() {
-        return necromancerSummonGui;
-    }
-    
-    public PactGui getPactGui() {
-        return pactGui;
+    private void registerCommands() {
+        getCommand("soulledger").setExecutor(new PactCommand(this));
     }
 
     @Override
@@ -55,21 +51,24 @@ public class SoulLedgerPlugin extends JavaPlugin {
         getLogger().info("Soul Ledger disabled.");
     }
 
-    public PactManager getPactManager() {
-        return pactManager;
+    public PactManager getPactManager() { return pactManager; }
+    public MobListener getMobListener() { return mobListener; }
+    public NecromancerSummonGui getNecromancerSummonGui() { return necromancerSummonGui; }
+    public PactGui getPactGui() { return pactGui; }
+
+    public com.soulledger.command.sub.ListSoulsSubCommand createListSoulsSubCommand() {
+        return new com.soulledger.command.sub.ListSoulsSubCommand(mobListener);
     }
 
     public String getFormattedMessage(String key) {
         String lang = getConfig().getString("settings.language", "en");
-        String path = "messages." + lang + "." + key;
         String prefix = getConfig().getString("messages." + lang + ".prefix", "");
+        String msg = getConfig().getString("messages." + lang + "." + key);
         
-        String msg = getConfig().getString(path);
         if (msg == null) {
             msg = getConfig().getString("messages.en." + key, "Message not found: " + key);
         }
         
-        msg = msg.replace("%prefix%", prefix);
-        return ChatColor.translateAlternateColorCodes('&', msg);
+        return ColorUtil.color(msg.replace("%prefix%", prefix));
     }
 }

@@ -1,0 +1,393 @@
+# MOB:
+#   buffs:
+#     - effect: SPEED
+#       amplifier: 0
+#       duration: 30
+#   player_kill_buffs:
+#     - effect: INCREASE_DAMAGE
+#       amplifier: 2
+#       duration: 120
+
+predator:
+# ----- COMMON / PASSIVE -----
+  mob_buffs:
+    SHEEP:
+      buffs:
+        - effect: REGENERATION
+          amplifier: 0
+          duration: 15
+
+    COW:
+      buffs:
+        - effect: REGENERATION
+          amplifier: 0
+          duration: 15
+
+    PIG:
+      buffs:
+        - effect: SATURATION
+          amplifier: 0
+          duration: 25
+
+    CHICKEN:
+      buffs:
+        - effect: FEATHER_FALLING
+          amplifier: 0
+          duration: 20
+
+    RABBIT:
+      buffs:
+        - effect: JUMP
+          amplifier: 0
+          duration: 30
+
+    HORSE:
+      buffs:
+        - effect: SPEED
+          amplifier: 0
+          duration: 30
+
+    LLAMA:
+      buffs:
+        - effect: SPEED
+          amplifier: 0
+          duration: 25
+
+    PARROT:
+      buffs:
+        - effect: SLOW_FALLING
+          amplifier: 0
+          duration: 30
+
+    # ----- NEUTRAL / SMALL HOSTILE -----
+    ZOMBIE:
+      buffs:
+        - effect: SPEED
+          amplifier: 0
+          duration: 25
+        - effect: REGENERATION
+          amplifier: 0
+          duration: 8
+
+    HUSK:
+      buffs:
+        - effect: SATURATION
+          amplifier: 0
+          duration: 30
+
+    SKELETON:
+      buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 0
+          duration: 30
+        - effect: SPEED
+          amplifier: 0
+          duration: 20
+
+    STRAY:
+      buffs:
+        - effect: SLOW
+          amplifier: 0
+          duration: 15
+
+    DROWNED:
+      buffs:
+        - effect: WATER_BREATHING
+          amplifier: 0
+          duration: 60
+        - effect: INCREASE_DAMAGE
+          amplifier: 0
+          duration: 12
+
+    SPIDER:
+      buffs:
+        - effect: NIGHT_VISION
+          amplifier: 0
+          duration: 60
+        - effect: SPEED
+          amplifier: 0
+          duration: 20
+
+    SILVERFISH:
+      buffs:
+        - effect: SPEED
+          amplifier: 0
+          duration: 15
+
+    ENDERMITE:
+      buffs:
+        - effect: JUMP
+          amplifier: 0
+          duration: 15
+
+    # ----- MEDIUM THREAT -----
+    PIGLIN:
+      buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 1
+          duration: 30
+        - effect: SPEED
+          amplifier: 0
+          duration: 20
+
+    VINDICATOR:
+      buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 1
+          duration: 25
+
+    PILLAGER:
+      buffs:
+        - effect: BAD_OMEN
+          amplifier: 0
+          duration: 40
+        - effect: INCREASE_DAMAGE
+          amplifier: 0
+          duration: 20
+
+    WITCH:
+      buffs:
+        - effect: REGENERATION
+          amplifier: 0
+          duration: 15
+        - effect: FIRE_RESISTANCE
+          amplifier: 0
+          duration: 20
+
+    VEX:
+      buffs:
+        - effect: INVISIBILITY
+          amplifier: 0
+          duration: 12
+
+    RAVAGER:
+      buffs:
+        - effect: KNOCKBACK_RESISTANCE
+          amplifier: 1
+          duration: 25
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 1
+          duration: 20
+
+    HOGLIN:
+      buffs:
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 1
+          duration: 25
+
+    MAGMA_CUBE:
+      buffs:
+        - effect: FIRE_RESISTANCE
+          amplifier: 0
+          duration: 30
+
+    SLIME:
+      buffs:
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 0
+          duration: 20
+
+    PHANTOM:
+      buffs:
+        - effect: SLOW_FALLING
+          amplifier: 0
+          duration: 30
+        - effect: NIGHT_VISION
+          amplifier: 0
+          duration: 20
+
+    BLAZE:
+      buffs:
+        - effect: FIRE_RESISTANCE
+          amplifier: 0
+          duration: 45
+        - effect: INCREASE_DAMAGE
+          amplifier: 1
+          duration: 18
+
+    # ----- STRONG / ELITE -----
+    WITHER_SKELETON:
+      buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 2
+          duration: 30
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 1
+          duration: 20
+      player_kill_buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 3
+          duration: 180
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 2
+          duration: 180
+
+    EVOKER:
+      buffs:
+        - effect: REGENERATION
+          amplifier: 0
+          duration: 20
+        - effect: INCREASE_DAMAGE
+          amplifier: 1
+          duration: 20
+      player_kill_buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 3
+          duration: 120
+
+    RAVAGER:
+      # already listed above as medium; add a stronger variant too
+      buffs:
+        - effect: KNOCKBACK_RESISTANCE
+          amplifier: 1
+          duration: 30
+        - effect: INCREASE_DAMAGE
+          amplifier: 1
+          duration: 25
+
+    ENDERMAN:
+      buffs:
+        - effect: JUMP
+          amplifier: 1
+          duration: 30
+        - effect: SPEED
+          amplifier: 1
+          duration: 25
+
+    # ----- BOSS-TIER -----
+    WITHER:
+      buffs:
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 3
+          duration: 200
+        - effect: INCREASE_DAMAGE
+          amplifier: 3
+          duration: 200
+        - effect: REGENERATION
+          amplifier: 2
+          duration: 120
+      player_kill_buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 5
+          duration: 600
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 4
+          duration: 600
+        - effect: REGENERATION
+          amplifier: 3
+          duration: 300
+
+    ENDER_DRAGON:
+      buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 4
+          duration: 200
+        - effect: SPEED
+          amplifier: 2
+          duration: 200
+        - effect: REGENERATION
+          amplifier: 2
+          duration: 200
+      player_kill_buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 6
+          duration: 600
+        - effect: SPEED
+          amplifier: 3
+          duration: 600
+
+    # ----- AQUATIC -----
+    DOLPHIN:
+      buffs:
+        - effect: DOLPHINS_GRACE
+          amplifier: 0
+          duration: 45
+        - effect: WATER_BREATHING
+          amplifier: 0
+          duration: 60
+
+    COD:
+      buffs:
+        - effect: WATER_BREATHING
+          amplifier: 0
+          duration: 30
+
+    SALMON:
+      buffs:
+        - effect: WATER_BREATHING
+          amplifier: 0
+          duration: 30
+
+    SQUID:
+      buffs:
+        - effect: WATER_BREATHING
+          amplifier: 0
+          duration: 30
+
+    # ----- TAME / COMPANION -----
+    WOLF:
+      buffs:
+        - effect: SPEED
+          amplifier: 1
+          duration: 30
+
+    CAT:
+      buffs:
+        - effect: NIGHT_VISION
+          amplifier: 0
+          duration: 60
+
+    # ----- PLAYER KILL (PvP) - buff garantido ao matar outro player -----
+    PLAYER:
+      buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 2
+          duration: 180
+        - effect: SPEED
+          amplifier: 1
+          duration: 120
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 1
+          duration: 120
+      player_kill_buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 4
+          duration: 420
+        - effect: DAMAGE_RESISTANCE
+          amplifier: 3
+          duration: 420
+        - effect: REGENERATION
+          amplifier: 2
+          duration: 180
+
+    # ----- UTILS / SMALLS -----
+    BAT:
+      buffs:
+        - effect: SPEED
+          amplifier: 0
+          duration: 20
+
+    RABBIT:
+      buffs:
+        - effect: JUMP
+          amplifier: 1
+          duration: 25
+
+    # Add more mobs below as needed (beef up as requested)
+    PILLAGER:
+      buffs:
+        - effect: INCREASE_DAMAGE
+          amplifier: 1
+          duration: 25
+        - effect: SPEED
+          amplifier: 0
+          duration: 20
+
+    ILLUSIONER:
+      buffs:
+        - effect: INVISIBILITY
+          amplifier: 0
+          duration: 40
+        - effect: SPEED
+          amplifier: 1
+          duration: 25

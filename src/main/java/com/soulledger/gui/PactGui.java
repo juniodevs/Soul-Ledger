@@ -49,7 +49,7 @@ public class PactGui {
                 meta.setDisplayName(ChatColor.LIGHT_PURPLE + "✦ " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', pact.getDisplayName()));
                 List<String> lore = new ArrayList<>();
                 lore.add(ChatColor.GRAY + "Sacrifice: " + ChatColor.RED + (pact.getHealthCost() > 0 ? "-" : "+") + Math.abs((int)pact.getHealthCost()) + " HP");
-                org.bukkit.Material displayCost = pact.getCostItem() != null ? pact.getCostItem() : pactManager.getGlobalCostItem();
+                Material displayCost = pact.getCostItem() != null ? pact.getCostItem() : pactManager.getGlobalCostItem();
                 if (displayCost != null) {
                     lore.add(ChatColor.GRAY + "Required: " + ChatColor.AQUA + displayCost.name().replace("_", " ").toLowerCase());
                 }

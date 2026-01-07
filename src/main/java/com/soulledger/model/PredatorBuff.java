@@ -4,26 +4,22 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class PredatorBuff {
     private final EntityType mobType;
-    private final PotionEffect effect;
-    private final int durationTicks;
+    private final List<PotionEffect> buffs;
+    private final List<PotionEffect> playerKillBuffs;
 
-    public PredatorBuff(EntityType mobType, PotionEffectType effectType, int amplifier, int durationSeconds) {
+    public PredatorBuff(EntityType mobType, List<PotionEffect> buffs, List<PotionEffect> playerKillBuffs) {
         this.mobType = mobType;
-        this.effect = new PotionEffect(effectType, durationSeconds * 20, amplifier);
-        this.durationTicks = durationSeconds * 20;
+        this.buffs = buffs != null ? buffs : new ArrayList<>();
+        this.playerKillBuffs = playerKillBuffs != null ? playerKillBuffs : new ArrayList<>();
     }
 
-    public EntityType getMobType() {
-        return mobType;
-    }
-
-    public PotionEffect getEffect() {
-        return effect;
-    }
-
-    public int getDurationTicks() {
-        return durationTicks;
-    }
+    public EntityType getMobType() { return mobType; }
+    public List<PotionEffect> getBuffs() { return Collections.unmodifiableList(buffs); }
+    public List<PotionEffect> getPlayerKillBuffs() { return Collections.unmodifiableList(playerKillBuffs); }
 }
