@@ -35,6 +35,10 @@ public class MobListener implements Listener {
                 if (plugin.getPactManager().hasNecromancyPact(killer)) {
                     lastMobDeath.put(killer.getUniqueId(), event);
                 }
+                
+                if (plugin.getPactManager().hasPredatorPact(killer)) {
+                    plugin.getPactManager().applyPredatorBuffOnKill(killer, entity);
+                }
             }
 
             if (entity.hasMetadata("necromancer_owner")) {

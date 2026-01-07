@@ -16,9 +16,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
-import java.util.logging.Level;
-import java.util.stream.Collectors;
-import org.bukkit.ChatColor;
 
 public class PactManager {
 
@@ -27,11 +24,19 @@ public class PactManager {
         return pacts.stream().anyMatch(p -> p.equalsIgnoreCase("necromancia") || p.equalsIgnoreCase("necromancy"));
     }
 
+    public boolean hasPredatorPact(Player player) {
+        List<String> pacts = getPlayerPacts(player);
+        return pacts.stream().anyMatch(p -> p.equalsIgnoreCase("predator") || p.equalsIgnoreCase("predador"));
+    }
+
     private final SoulLedgerPlugin plugin;
     private final Map<String, Pact> loadedPacts = new HashMap<>();
     private final Map<UUID, List<String>> activePacts = new HashMap<>();
     private final NamespacedKey pdcKey;
     private Material globalCostItem;
+    private final Map<org.bukkit.entity.EntityType, com.soulledger.model.PredatorBuff> predatorBuffMappings = new HashMap<>();
+    private final Map<java.util.UUID, Map<org.bukkit.entity.EntityType, Integer>> predatorKillCounters = new HashMap<>();
+    private final java.util.Random random = new java.util.Random();
 
     public PactManager(SoulLedgerPlugin plugin) {
         this.plugin = plugin;
@@ -112,8 +117,14 @@ public class PactManager {
                 }
             }
 
-            Pact pact = new Pact(key, displayName, cost, costItem, attributeModifiers, effects, permission, icon);
-            loadedPacts.put(key, pact);
+            if (key.equalsIgnoreCase("predator") || key.equalsIgnoreCase("predador")) {
+                loadPredatorBuffMappingsFromConfig();
+                Pact pact = new Pact(key, displayName, cost, costItem, attributeModifiers, effects, permission, icon, predatorBuffMappings);
+                loadedPacts.put(key, pact);
+            } else {
+                Pact pact = new Pact(key, displayName, cost, costItem, attributeModifiers, effects, permission, icon);
+                loadedPacts.put(key, pact);
+            }
         }
         plugin.getLogger().info("Loaded " + loadedPacts.size() + " pacts.");
     }
@@ -208,17 +219,17 @@ public class PactManager {
     }
 
     public void revokeAllPacts(Player player) {
-                org.bukkit.inventory.PlayerInventory inv = player.getInventory();
-                for (org.bukkit.inventory.ItemStack item : inv.getContents()) {
-                    if (item != null && item.getType() == org.bukkit.Material.STICK && item.hasItemMeta()) {
-                        org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
-                        String lang = plugin.getConfig().getString("settings.language", "en");
-                        String name = plugin.getConfig().getString("messages." + lang + ".soul_staff_name", "Cajado das Almas");
-                        if (meta.hasDisplayName() && meta.getDisplayName().contains(name)) {
-                            inv.remove(item);
-                        }
-                    }
+        org.bukkit.inventory.PlayerInventory inv = player.getInventory();
+        for (org.bukkit.inventory.ItemStack item : inv.getContents()) {
+            if (item != null && item.getType() == org.bukkit.Material.STICK && item.hasItemMeta()) {
+                org.bukkit.inventory.meta.ItemMeta meta = item.getItemMeta();
+                String lang = plugin.getConfig().getString("settings.language", "en");
+                String name = plugin.getConfig().getString("messages." + lang + ".soul_staff_name", "Cajado das Almas");
+                if (meta.hasDisplayName() && meta.getDisplayName().contains(name)) {
+                    inv.remove(item);
                 }
+            }
+        }
         AttributeInstance healthAttr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (healthAttr != null) {
             healthAttr.setBaseValue(healthAttr.getDefaultValue());
@@ -303,5 +314,86 @@ public class PactManager {
 
     public Material getGlobalCostItem() {
         return globalCostItem;
+    }
+
+    public void loadPredatorBuffMappingsFromConfig() {
+        predatorBuffMappings.clear();
+        org.bukkit.configuration.ConfigurationSection section = plugin.getConfig().getConfigurationSection("pacts.predator.mob_buffs");
+        if (section == null) {
+            loadDefaultPredatorBuffMappings();
+            return;
+        }
+        for (String mobKey : section.getKeys(false)) {
+            try {
+                org.bukkit.entity.EntityType mobType = org.bukkit.entity.EntityType.valueOf(mobKey.toUpperCase());
+                String value = section.getString(mobKey);
+                if (value != null && value.contains(":")) {
+                    String[] parts = value.split(":");
+                    String effectName = parts.length > 0 ? parts[0] : "SPEED";
+                    int amplifier = parts.length > 1 ? Integer.parseInt(parts[1]) : 0;
+                    int duration = parts.length > 2 ? Integer.parseInt(parts[2]) : 30;
+                    org.bukkit.potion.PotionEffectType effectType = org.bukkit.potion.PotionEffectType.getByName(effectName);
+                    if (effectType != null) {
+                        com.soulledger.model.PredatorBuff buff = new com.soulledger.model.PredatorBuff(mobType, effectType, amplifier, duration);
+                        predatorBuffMappings.put(mobType, buff);
+                    }
+                } else {
+                    String effectName = section.getString(mobKey + ".effect", "SPEED");
+                    int amplifier = section.getInt(mobKey + ".amplifier", 1);
+                    int duration = section.getInt(mobKey + ".duration", 30);
+                    org.bukkit.potion.PotionEffectType effectType = org.bukkit.potion.PotionEffectType.getByName(effectName);
+                    if (effectType != null) {
+                        com.soulledger.model.PredatorBuff buff = new com.soulledger.model.PredatorBuff(mobType, effectType, amplifier, duration);
+                        predatorBuffMappings.put(mobType, buff);
+                    }
+                }
+            } catch (Exception e) {
+            }
+        }
+        if (predatorBuffMappings.isEmpty()) {
+            loadDefaultPredatorBuffMappings();
+        }
+    }
+
+    private void loadDefaultPredatorBuffMappings() {
+    }
+
+    public void applyPredatorBuffOnKill(org.bukkit.entity.Player player, org.bukkit.entity.LivingEntity entity) {
+        if (!hasPredatorPact(player)) return;
+        org.bukkit.entity.EntityType killedType = entity.getType();
+        com.soulledger.model.PredatorBuff buff = predatorBuffMappings.get(killedType);
+        if (buff != null) {
+            player.addPotionEffect(buff.getEffect());
+            Map<org.bukkit.entity.EntityType, Integer> counters = predatorKillCounters.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>());
+            int newCount = counters.getOrDefault(killedType, 0) + 1;
+            counters.put(killedType, newCount);
+            String effectName = buff.getEffect().getType().getName().replace("_", " ");
+            String capitalizedEffect = effectName.substring(0, 1).toUpperCase() + effectName.substring(1).toLowerCase();
+            if (random.nextInt(3) == 0) {
+                player.sendMessage(org.bukkit.ChatColor.GOLD + "[Predator] " + org.bukkit.ChatColor.WHITE + "Killed " + killedType.name().replace("_", " ") + org.bukkit.ChatColor.GRAY + " - " + org.bukkit.ChatColor.AQUA + capitalizedEffect + " " + getRomanNumeral(buff.getEffect().getAmplifier() + 1) + org.bukkit.ChatColor.GRAY + " for " + (buff.getEffect().getDuration() / 20) + "s");
+            }
+            player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_BURP, 0.5f, 1.5f);
+            player.getWorld().spawnParticle(org.bukkit.Particle.ENCHANTMENT_TABLE, player.getLocation().add(0, 1, 0), 5, 0.3, 0.5, 0.3, 0.05);
+        }
+    }
+
+    public int getPredatorKillCount(org.bukkit.entity.Player player, org.bukkit.entity.EntityType mobType) {
+        Map<org.bukkit.entity.EntityType, Integer> counters = predatorKillCounters.get(player.getUniqueId());
+        return counters != null ? counters.getOrDefault(mobType, 0) : 0;
+    }
+
+    public com.soulledger.model.PredatorBuff getPredatorBuffForMobType(org.bukkit.entity.EntityType mobType) {
+        return predatorBuffMappings.get(mobType);
+    }
+
+    private String getRomanNumeral(int number) {
+        if (number < 1) return "I";
+        if (number > 10) return String.valueOf(number);
+        String[] romanNumerals = {"I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"};
+        return romanNumerals[number - 1];
+    }
+
+    public void clearPredatorKillCounters(java.util.UUID playerId) {
+        predatorKillCounters.remove(playerId);
     }
 }
