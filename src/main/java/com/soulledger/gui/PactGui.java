@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class PactGui implements Listener {
+public class PactGui {
 
     private final SoulLedgerPlugin plugin;
     private final PactManager pactManager;
@@ -91,8 +91,7 @@ public class PactGui implements Listener {
         player.openInventory(inv);
     }
 
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void handleInternalClick(InventoryClickEvent event) {
         if (!event.getView().getTitle().equals(ChatColor.DARK_PURPLE + "❖ Soul Ledger ❖")) return;
         event.setCancelled(true);
         if (event.getCurrentItem() == null) return;

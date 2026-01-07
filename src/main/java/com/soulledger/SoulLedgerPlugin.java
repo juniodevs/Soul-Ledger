@@ -9,8 +9,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SoulLedgerPlugin extends JavaPlugin {
 
-    public com.soulledger.listener.NecromancyListener necromancyListener;
-
+    private com.soulledger.listener.MobListener mobListener;
+    private com.soulledger.gui.NecromancerSummonGui necromancerSummonGui;
     private PactManager pactManager;
     private PactGui pactGui;
 
@@ -20,26 +20,30 @@ public class SoulLedgerPlugin extends JavaPlugin {
 
         this.pactManager = new PactManager(this);
         this.pactGui = new PactGui(this);
+        this.mobListener = new com.soulledger.listener.MobListener(this);
+        this.necromancerSummonGui = new com.soulledger.gui.NecromancerSummonGui(this, mobListener);
 
-        this.necromancyListener = new com.soulledger.listener.NecromancyListener(pactManager, this);
-        getServer().getPluginManager().registerEvents(necromancyListener, this);
+        getServer().getPluginManager().registerEvents(mobListener, this);
+        getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
 
-        com.soulledger.gui.NecromancerSummonGui necromancerSummonGui = new com.soulledger.gui.NecromancerSummonGui(this, necromancyListener);
-        getServer().getPluginManager().registerEvents(necromancerSummonGui, this);
-        getServer().getPluginManager().registerEvents(new com.soulledger.listener.NecromancerStickListener(), this);
-        getServer().getPluginManager().registerEvents(new com.soulledger.listener.NecromancerStickUseListener(pactManager, necromancyListener), this);
+        getServer().getPluginManager().registerEvents(new com.soulledger.listener.ItemListener(this), this);
+        getServer().getPluginManager().registerEvents(new com.soulledger.listener.GuiListener(this), this);
 
         getCommand("soulledger").setExecutor(new PactCommand(this));
-        getServer().getPluginManager().registerEvents(new PlayerDeathListener(this), this);
-        getServer().getPluginManager().registerEvents(pactGui, this);
-
-        getServer().getPluginManager().registerEvents(new com.soulledger.listener.FlameStaffListener(), this);
 
         getLogger().info("Soul Ledger started. Death awaits.");
     }
 
     public com.soulledger.command.sub.ListSoulsSubCommand createListSoulsSubCommand() {
-        return new com.soulledger.command.sub.ListSoulsSubCommand(necromancyListener);
+        return new com.soulledger.command.sub.ListSoulsSubCommand(mobListener);
+    }
+
+    public com.soulledger.listener.MobListener getMobListener() {
+        return mobListener;
+    }
+
+    public com.soulledger.gui.NecromancerSummonGui getNecromancerSummonGui() {
+        return necromancerSummonGui;
     }
     
     public PactGui getPactGui() {

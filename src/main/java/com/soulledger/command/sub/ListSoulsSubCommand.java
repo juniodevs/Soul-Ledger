@@ -1,20 +1,17 @@
 package com.soulledger.command.sub;
 
-import com.soulledger.listener.NecromancyListener;
-import org.bukkit.Bukkit;
+import com.soulledger.listener.MobListener;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import com.soulledger.command.SubCommand;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import java.util.*;
 
 public class ListSoulsSubCommand implements SubCommand {
-    private final NecromancyListener necromancyListener;
-    public ListSoulsSubCommand(NecromancyListener necromancyListener) {
-        this.necromancyListener = necromancyListener;
+    private final MobListener mobListener;
+    public ListSoulsSubCommand(MobListener mobListener) {
+        this.mobListener = mobListener;
     }
     @Override
     public String getName() { return "listsouls"; }
@@ -35,7 +32,7 @@ public class ListSoulsSubCommand implements SubCommand {
             return true;
         }
         Player player = (Player) sender;
-        List<LivingEntity> souls = necromancyListener.getSummonedSouls(player);
+        List<LivingEntity> souls = mobListener.getSummonedSouls(player);
         if (souls.isEmpty()) {
             player.sendMessage(plugin.getFormattedMessage("no_souls_summoned"));
             return true;

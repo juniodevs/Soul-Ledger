@@ -15,9 +15,9 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import java.util.*;
 
-public class NecromancerSummonGui implements Listener {
+public class NecromancerSummonGui {
     private final Plugin plugin;
-    private final com.soulledger.listener.NecromancyListener necromancyListener;
+    private final com.soulledger.listener.MobListener mobListener;
     private String getGuiTitle() {
         var cfg = ((com.soulledger.SoulLedgerPlugin)plugin).getConfig();
         String t = cfg.getString("messages." + cfg.getString("settings.language", "en") + ".necromancer_gui_title");
@@ -31,9 +31,9 @@ public class NecromancerSummonGui implements Listener {
         EntityType.ZOMBIFIED_PIGLIN
     );
 
-    public NecromancerSummonGui(Plugin plugin, com.soulledger.listener.NecromancyListener necromancyListener) {
+    public NecromancerSummonGui(Plugin plugin, com.soulledger.listener.MobListener mobListener) {
         this.plugin = plugin;
-        this.necromancyListener = necromancyListener;
+        this.mobListener = mobListener;
     }
 
     public void open(Player player) {
@@ -68,8 +68,7 @@ public class NecromancerSummonGui implements Listener {
         player.openInventory(inv);
     }
 
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
+    public void handleInternalClick(InventoryClickEvent event) {
         if (!event.getView().getTitle().equals(getGuiTitle())) return;
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player)) return;
@@ -139,7 +138,7 @@ public class NecromancerSummonGui implements Listener {
                     summoned.addPotionEffect(buffs[idx]);
                 }
             }
-            necromancyListener.addSummonedSoul(player, summoned);
+            mobListener.addSummonedSoul(player, summoned);
             player.getWorld().spawnParticle(org.bukkit.Particle.SOUL, player.getLocation(), 30, 0.5, 1, 0.5, 0.1);
             player.getWorld().playSound(player.getLocation(), org.bukkit.Sound.ENTITY_ZOMBIE_AMBIENT, 0.8f, 0.5f);
             double currentMax = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getBaseValue();
