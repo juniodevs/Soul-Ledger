@@ -43,7 +43,11 @@ public class PactGui {
         int i = 0;
         for (Pact pact : pactManager.getLoadedPacts().values()) {
             if (i >= slots.length) break;
-            ItemStack item = new ItemStack(pact.getIcon());
+            org.bukkit.Material mat = pact.getIcon() != null ? pact.getIcon() : org.bukkit.Material.NETHER_STAR;
+            if (pact.getIcon() == null) {
+                plugin.getLogger().warning("Pact '" + pact.getId() + "' has no valid icon configured; using NETHER_STAR as fallback.");
+            }
+            ItemStack item = new ItemStack(mat);
             ItemMeta meta = item.getItemMeta();
             if (meta != null) {
                 meta.setDisplayName(ChatColor.LIGHT_PURPLE + "✦ " + ChatColor.WHITE + ChatColor.translateAlternateColorCodes('&', pact.getDisplayName()));
@@ -91,24 +95,146 @@ public class PactGui {
         player.openInventory(inv);
     }
 
+    public void openHeartLinkMenu(Player player) {
+        int size = 27;
+        Inventory inv = Bukkit.createInventory(null, size, ChatColor.DARK_RED + "♥ Heart Link - Send Request");
+
+        java.util.List<org.bukkit.entity.Player> targets = pactManager.getAvailableTargets(player);
+        if (targets.isEmpty()) {
+            ItemStack none = new ItemStack(Material.BARRIER);
+            ItemMeta nm = none.getItemMeta();
+            if (nm != null) {
+                nm.setDisplayName(ChatColor.RED + "No available targets");
+                nm.setLore(java.util.Arrays.asList(ChatColor.GRAY + "No online players available to link."));
+                none.setItemMeta(nm);
+            }
+            inv.setItem(13, none);
+            player.openInventory(inv);
+            return;
+        }
+
+        int slot = 10;
+        for (org.bukkit.entity.Player t : targets) {
+            ItemStack head = new ItemStack(org.bukkit.Material.PLAYER_HEAD);
+            org.bukkit.inventory.meta.SkullMeta sm = (org.bukkit.inventory.meta.SkullMeta) head.getItemMeta();
+            if (sm != null) {
+                try { sm.setOwningPlayer(t); } catch (Exception ignored) {}
+                sm.setDisplayName(org.bukkit.ChatColor.AQUA + t.getName());
+                sm.setLore(java.util.Arrays.asList(org.bukkit.ChatColor.GRAY + "Click to send Heart Link request to this player."));
+                head.setItemMeta(sm);
+            }
+            if (slot >= 17) slot = 19 + (slot - 17);
+            inv.setItem(slot, head);
+            slot++;
+        }
+
+        ItemStack req = new ItemStack(Material.WRITTEN_BOOK);
+        ItemMeta rm = req.getItemMeta();
+        if (rm != null) {
+            rm.setDisplayName(ChatColor.GOLD + "View Requests");
+            rm.setLore(java.util.Arrays.asList(ChatColor.GRAY + "Click to view incoming Heart Link requests."));
+            req.setItemMeta(rm);
+        }
+        inv.setItem(22, req);
+
+        player.openInventory(inv);
+    }
+
+    public void openHeartLinkRequestsMenu(Player player) {
+        int size = 27;
+        Inventory inv = Bukkit.createInventory(null, size, ChatColor.GOLD + "♥ Heart Link - Requests");
+
+        java.util.List<org.bukkit.entity.Player> reqs = pactManager.getPendingRequesters(player);
+        if (reqs.isEmpty()) {
+            ItemStack none = new ItemStack(Material.WRITABLE_BOOK);
+            ItemMeta nm = none.getItemMeta();
+            if (nm != null) {
+                nm.setDisplayName(ChatColor.GRAY + "No requests");
+                nm.setLore(java.util.Arrays.asList(ChatColor.GRAY + "You have no incoming Heart Link requests."));
+                none.setItemMeta(nm);
+            }
+            inv.setItem(13, none);
+            player.openInventory(inv);
+            return;
+        }
+
+        int slot = 10;
+        for (org.bukkit.entity.Player t : reqs) {
+            ItemStack head = new ItemStack(org.bukkit.Material.PLAYER_HEAD);
+            org.bukkit.inventory.meta.SkullMeta sm = (org.bukkit.inventory.meta.SkullMeta) head.getItemMeta();
+            if (sm != null) {
+                try { sm.setOwningPlayer(t); } catch (Exception ignored) {}
+                sm.setDisplayName(org.bukkit.ChatColor.AQUA + t.getName());
+                sm.setLore(java.util.Arrays.asList(org.bukkit.ChatColor.GRAY + "Click to accept Heart Link from this player."));
+                head.setItemMeta(sm);
+            }
+            if (slot >= 17) slot = 19 + (slot - 17);
+            inv.setItem(slot, head);
+            slot++;
+        }
+
+        player.openInventory(inv);
+    }
+
     public void handleInternalClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals(ChatColor.DARK_PURPLE + "❖ Soul Ledger ❖")) return;
-        event.setCancelled(true);
+        String title = event.getView().getTitle();
         if (event.getCurrentItem() == null) return;
         if (!(event.getWhoClicked() instanceof Player)) return;
         Player player = (Player) event.getWhoClicked();
         ItemStack clicked = event.getCurrentItem();
-        if (clicked.hasItemMeta() && clicked.getItemMeta().getPersistentDataContainer().has(pactKey, PersistentDataType.STRING)) {
-            String pactId = clicked.getItemMeta().getPersistentDataContainer().get(pactKey, PersistentDataType.STRING);
-            Pact pact = pactManager.getLoadedPacts().get(pactId);
-            if (pact != null && !player.hasPermission(pact.getPermission())) {
-                 player.sendMessage(plugin.getFormattedMessage("no_permission"));
-                 player.closeInventory();
-                 return;
+
+        if (title.equals(ChatColor.DARK_PURPLE + "❖ Soul Ledger ❖")) {
+            event.setCancelled(true);
+            if (clicked.hasItemMeta() && clicked.getItemMeta().getPersistentDataContainer().has(pactKey, PersistentDataType.STRING)) {
+                String pactId = clicked.getItemMeta().getPersistentDataContainer().get(pactKey, PersistentDataType.STRING);
+
+                if (pactId != null && (pactId.equalsIgnoreCase("heartlink") || pactId.equalsIgnoreCase("heart_link"))) {
+                    this.openHeartLinkMenu(player);
+                    return;
+                }
+
+                Pact pact = pactManager.getLoadedPacts().get(pactId);
+                if (pact != null && !player.hasPermission(pact.getPermission())) {
+                     player.sendMessage(plugin.getFormattedMessage("no_permission"));
+                     player.closeInventory();
+                     return;
+                }
+                boolean success = pactManager.sealPact(player, pactId);
+                if (success) {
+                    player.closeInventory();
+                }
             }
-            boolean success = pactManager.sealPact(player, pactId);
-            if (success) {
-                player.closeInventory();
+            return;
+        }
+
+        if (title.equals(ChatColor.DARK_RED + "♥ Heart Link - Send Request")) {
+            event.setCancelled(true);
+            if (clicked.getType() == Material.PLAYER_HEAD) {
+                org.bukkit.inventory.meta.SkullMeta sm = (org.bukkit.inventory.meta.SkullMeta) clicked.getItemMeta();
+                if (sm != null && sm.getOwningPlayer() != null) {
+                    org.bukkit.OfflinePlayer target = sm.getOwningPlayer();
+                    if (target.isOnline() && target.getUniqueId() != player.getUniqueId()) {
+                        pactManager.requestHeartLink(player, target.getName());
+                        player.closeInventory();
+                    }
+                }
+            } else if (clicked.getType() == Material.WRITTEN_BOOK) {
+                this.openHeartLinkRequestsMenu(player);
+            }
+            return;
+        }
+
+        if (title.equals(ChatColor.GOLD + "♥ Heart Link - Requests")) {
+            event.setCancelled(true);
+            if (clicked.getType() == Material.PLAYER_HEAD) {
+                org.bukkit.inventory.meta.SkullMeta sm = (org.bukkit.inventory.meta.SkullMeta) clicked.getItemMeta();
+                if (sm != null && sm.getOwningPlayer() != null) {
+                    org.bukkit.OfflinePlayer target = sm.getOwningPlayer();
+                    if (target.isOnline()) {
+                        pactManager.acceptHeartLink(player, target.getName());
+                        player.closeInventory();
+                    }
+                }
             }
         }
     }

@@ -4,6 +4,7 @@ import com.soulledger.command.PactCommand;
 import com.soulledger.gui.PactGui;
 import com.soulledger.gui.NecromancerSummonGui;
 import com.soulledger.listener.GuiListener;
+import com.soulledger.listener.HeartLinkListener;
 import com.soulledger.listener.ItemListener;
 import com.soulledger.listener.MobListener;
 import com.soulledger.listener.PlayerDeathListener;
@@ -39,6 +40,7 @@ public class SoulLedgerPlugin extends JavaPlugin {
         pm.registerEvents(mobListener, this);
         pm.registerEvents(new PlayerDeathListener(this), this);
         pm.registerEvents(new ItemListener(this), this);
+        pm.registerEvents(new HeartLinkListener(this), this);
         pm.registerEvents(new GuiListener(this), this);
     }
 

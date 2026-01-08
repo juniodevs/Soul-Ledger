@@ -25,6 +25,19 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+
+        if (pactManager.isHeartLinked(player)) {
+            Player partner = pactManager.getHeartPartner(player);
+            if (partner != null && partner.isOnline() && !partner.isDead()) {
+                try {
+                    partner.setHealth(0.0);
+                } catch (Exception ignored) {
+                    partner.damage(1000.0);
+                }
+            }
+            pactManager.removeHeartLink(player);
+        }
+
         pactManager.revokeAllPacts(player);
         plugin.getMobListener().removeAllSouls(player);
         player.sendMessage(plugin.getFormattedMessage("pact_revoked"));

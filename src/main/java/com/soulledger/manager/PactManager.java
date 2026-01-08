@@ -39,11 +39,21 @@ public class PactManager {
     private Material globalCostItem;
     private final Random random = new Random();
 
+    private final NamespacedKey heartLinkKey;
+    private final Map<java.util.UUID, java.util.UUID> heartLinks = new HashMap<>();
+    private final Map<java.util.UUID, java.util.UUID> pendingHeartRequests = new HashMap<>();
+    private final java.util.Set<java.util.UUID> ignoreDamage = new HashSet<>();
+    private final java.util.Set<java.util.UUID> ignoreHeal = new HashSet<>();
+
+    private final Map<java.util.UUID, Map<org.bukkit.attribute.Attribute, Double>> attributeBackups = new HashMap<>();
+
     public PactManager(SoulLedgerPlugin plugin) {
         this.plugin = plugin;
         this.pdcKey = new NamespacedKey(plugin, "active_pacts");
+        this.heartLinkKey = new NamespacedKey(plugin, "heart_link_partner");
         loadPactsFromConfig();
         plugin.getServer().getOnlinePlayers().forEach(this::restorePacts);
+        plugin.getServer().getOnlinePlayers().forEach(this::restoreHeartLink);
     }
 
     public void loadPactsFromConfig() {
@@ -216,6 +226,10 @@ public class PactManager {
     }
 
     public boolean sealPact(Player player, String pactId) {
+        if (pactId.equalsIgnoreCase("heartlink") || pactId.equalsIgnoreCase("heart_link")) {
+            player.sendMessage(plugin.getFormattedMessage("heartlink_usage"));
+            return false;
+        }
         Pact pact = loadedPacts.get(pactId);
         if (pact == null) return false;
 
@@ -264,7 +278,11 @@ public class PactManager {
 
         pact.getAttributeModifiers().forEach((attr, val) -> {
             AttributeInstance instance = player.getAttribute(attr);
-            if (instance != null) instance.setBaseValue(instance.getBaseValue() + val);
+            if (instance != null) {
+                // backup original value if not already backed up
+                attributeBackups.computeIfAbsent(player.getUniqueId(), k -> new HashMap<>()).putIfAbsent(attr, instance.getBaseValue());
+                instance.setBaseValue(instance.getBaseValue() + val);
+            }
         });
 
         pact.getEffects().forEach(player::addPotionEffect);
@@ -320,6 +338,9 @@ public class PactManager {
             if (pact != null) pact.getEffects().forEach(player::addPotionEffect);
         });
         activePacts.put(player.getUniqueId(), new ArrayList<>(pacts));
+
+        // restore heart link association if present
+        restoreHeartLink(player);
     }
 
     private void savePact(Player player, String pactId) {
@@ -327,6 +348,185 @@ public class PactManager {
         pacts.add(pactId);
         player.getPersistentDataContainer().set(pdcKey, PersistentDataType.STRING, String.join(",", pacts));
     }
+
+    // -- Heart Link logic --
+    public boolean requestHeartLink(Player from, String targetName) {
+        Player to = plugin.getServer().getPlayerExact(targetName);
+        if (to == null) {
+            from.sendMessage(plugin.getFormattedMessage("pact_not_found").replace("%pact%", targetName));
+            return false;
+        }
+        if (to.getUniqueId().equals(from.getUniqueId())) {
+            from.sendMessage(plugin.getFormattedMessage("unknown_command"));
+            return false;
+        }
+        if (isHeartLinked(from) || isHeartLinked(to)) {
+            from.sendMessage(plugin.getFormattedMessage("heartlink_already_linked"));
+            return false;
+        }
+        pendingHeartRequests.put(to.getUniqueId(), from.getUniqueId());
+        from.sendMessage(plugin.getFormattedMessage("heartlink_request_sent").replace("%target%", to.getName()));
+        to.sendMessage(plugin.getFormattedMessage("heartlink_request_received").replace("%from%", from.getName()).replace("%cmd%", "/sl acceptheartlink " + from.getName()));
+        return true;
+    }
+
+    public boolean acceptHeartLink(Player acceptor, String requesterName) {
+        Player requester = plugin.getServer().getPlayerExact(requesterName);
+        if (requester == null) {
+            acceptor.sendMessage(plugin.getFormattedMessage("pact_not_found").replace("%pact%", requesterName));
+            return false;
+        }
+        UUID req = pendingHeartRequests.get(acceptor.getUniqueId());
+        if (req == null || !req.equals(requester.getUniqueId())) {
+            acceptor.sendMessage(plugin.getFormattedMessage("heartlink_no_request"));
+            return false;
+        }
+
+        Pact pact = loadedPacts.get("heartlink");
+        if (pact == null) pact = loadedPacts.get("heart_link");
+        if (pact == null) {
+            acceptor.sendMessage(plugin.getFormattedMessage("pact_not_found"));
+            return false;
+        }
+
+        // ensure both have enough health
+        AttributeInstance aHealth = acceptor.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance rHealth = requester.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        if (aHealth == null || rHealth == null || aHealth.getBaseValue() <= pact.getHealthCost() + 1.0 || rHealth.getBaseValue() <= pact.getHealthCost() + 1.0) {
+            acceptor.sendMessage(plugin.getFormattedMessage("insufficient_health"));
+            return false;
+        }
+
+        // Try consuming cost item for both (if configured)
+        if (!consumeCostItem(acceptor, pact)) return false;
+        if (!consumeCostItem(requester, pact)) return false;
+
+        // Apply effects and double their hearts
+        applyPactEffects(acceptor, pact);
+        applyPactEffects(requester, pact);
+
+        AttributeInstance aMax = acceptor.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        AttributeInstance rMax = requester.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        if (aMax != null) aMax.setBaseValue(aMax.getBaseValue() * 2.0);
+        if (rMax != null) rMax.setBaseValue(rMax.getBaseValue() * 2.0);
+
+        savePact(acceptor, "heartlink");
+        savePact(requester, "heartlink");
+
+        // Save to persistent data
+        acceptor.getPersistentDataContainer().set(heartLinkKey, PersistentDataType.STRING, requester.getUniqueId().toString());
+        requester.getPersistentDataContainer().set(heartLinkKey, PersistentDataType.STRING, acceptor.getUniqueId().toString());
+
+        // In-memory mapping
+        heartLinks.put(acceptor.getUniqueId(), requester.getUniqueId());
+        heartLinks.put(requester.getUniqueId(), acceptor.getUniqueId());
+
+        // Notify
+        acceptor.sendMessage(plugin.getFormattedMessage("heartlink_created").replace("%other%", requester.getName()));
+        requester.sendMessage(plugin.getFormattedMessage("heartlink_created").replace("%other%", acceptor.getName()));
+
+        pendingHeartRequests.remove(acceptor.getUniqueId());
+        playSealEffects(acceptor);
+        playSealEffects(requester);
+        return true;
+    }
+
+    private void restoreHeartLink(Player player) {
+        PersistentDataContainer pdc = player.getPersistentDataContainer();
+        String other = pdc.get(heartLinkKey, PersistentDataType.STRING);
+        if (other == null) return;
+        try {
+            UUID otherId = UUID.fromString(other);
+            Player otherPlayer = plugin.getServer().getPlayer(otherId);
+            if (otherPlayer != null) {
+                heartLinks.put(player.getUniqueId(), otherId);
+                heartLinks.put(otherId, player.getUniqueId());
+                // ensure doubled health is in place for the online player
+                AttributeInstance health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                if (health != null) health.setBaseValue(health.getBaseValue() * 2.0);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    public boolean isHeartLinked(Player player) {
+        return heartLinks.containsKey(player.getUniqueId());
+    }
+
+    private void restoreAttributes(Player player) {
+        Map<org.bukkit.attribute.Attribute, Double> map = attributeBackups.remove(player.getUniqueId());
+        if (map == null) return;
+        map.forEach((attr, val) -> {
+            AttributeInstance inst = player.getAttribute(attr);
+            if (inst != null) inst.setBaseValue(val);
+        });
+    }
+    public Player getHeartPartner(Player player) {
+        UUID partner = heartLinks.get(player.getUniqueId());
+        if (partner == null) return null;
+        return plugin.getServer().getPlayer(partner);
+    }
+
+    public void removeHeartLink(Player player) {
+        Player partner = getHeartPartner(player);
+        UUID playerId = player.getUniqueId();
+        heartLinks.remove(playerId);
+        player.getPersistentDataContainer().remove(heartLinkKey);
+        List<String> pacts = activePacts.getOrDefault(playerId, new ArrayList<>());
+        pacts.remove("heartlink");
+        activePacts.put(playerId, pacts);
+
+        if (partner != null) {
+            UUID partnerId = partner.getUniqueId();
+            heartLinks.remove(partnerId);
+            partner.getPersistentDataContainer().remove(heartLinkKey);
+            List<String> p2 = activePacts.getOrDefault(partnerId, new ArrayList<>());
+            p2.remove("heartlink");
+            activePacts.put(partnerId, p2);
+            forceResetAttributes(partner);
+            partner.sendMessage(plugin.getFormattedMessage("heartlink_revoked"));
+        }
+        forceResetAttributes(player);
+        player.sendMessage(plugin.getFormattedMessage("heartlink_revoked"));
+    }
+
+    public java.util.List<org.bukkit.entity.Player> getPendingRequesters(org.bukkit.entity.Player target) {
+        java.util.List<org.bukkit.entity.Player> list = new java.util.ArrayList<>();
+        java.util.UUID tid = target.getUniqueId();
+        pendingHeartRequests.forEach((toUuid, fromUuid) -> {
+            if (toUuid.equals(tid)) {
+                org.bukkit.entity.Player p = plugin.getServer().getPlayer(fromUuid);
+                if (p != null) list.add(p);
+            }
+        });
+        return list;
+    }
+
+    public java.util.List<org.bukkit.entity.Player> getAvailableTargets(org.bukkit.entity.Player requester) {
+        java.util.List<org.bukkit.entity.Player> list = new java.util.ArrayList<>();
+        for (org.bukkit.entity.Player p : plugin.getServer().getOnlinePlayers()) {
+            if (p.getUniqueId().equals(requester.getUniqueId())) continue;
+            if (isHeartLinked(p)) continue;
+            if (isHeartLinked(requester)) continue;
+            list.add(p);
+        }
+        return list;
+    }
+
+    // Helper to let external code try consuming an item (used for both players in requests)
+    public boolean tryConsumeCostItem(Player player, String pactId) {
+        Pact pact = loadedPacts.get(pactId);
+        if (pact == null) return true;
+        return consumeCostItem(player, pact);
+    }
+
+    // Ignore sets API for Heart Link mirroring (prevent recursion)
+    public boolean isIgnoringDamage(java.util.UUID uuid) { return ignoreDamage.contains(uuid); }
+    public void markIgnoreDamage(java.util.UUID uuid) { ignoreDamage.add(uuid); }
+    public void unmarkIgnoreDamage(java.util.UUID uuid) { ignoreDamage.remove(uuid); }
+
+    public boolean isIgnoringHeal(java.util.UUID uuid) { return ignoreHeal.contains(uuid); }
+    public void markIgnoreHeal(java.util.UUID uuid) { ignoreHeal.add(uuid); }
+    public void unmarkIgnoreHeal(java.util.UUID uuid) { ignoreHeal.remove(uuid); }
 
     public boolean hasPact(Player player, String pactId) {
         return activePacts.getOrDefault(player.getUniqueId(), Collections.emptyList()).contains(pactId);
@@ -374,18 +574,27 @@ public class PactManager {
     }
 
     public void revokeAllPacts(Player player) {
+        // If heart linked, ensure partner is unlinked as well
+        if (isHeartLinked(player)) {
+            removeHeartLink(player);
+        }
         activePacts.remove(player.getUniqueId());
         player.getPersistentDataContainer().remove(pdcKey);
+        // restore non-health attributes to their original values
+        restoreAttributes(player);
         forceResetAttributes(player);
     }
 
     public void forceResetAttributes(Player player) {
+        // restore health
         AttributeInstance health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
         if (health != null) health.setBaseValue(health.getDefaultValue());
-        
+        // remove potion effects
         for (PotionEffect effect : player.getActivePotionEffects()) {
             player.removePotionEffect(effect.getType());
         }
+        // restore other attributes (if backups exist)
+        restoreAttributes(player);
     }
 
     public boolean hasNecromancyPact(Player player) {

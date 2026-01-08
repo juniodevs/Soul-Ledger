@@ -53,6 +53,17 @@ public class SealSubCommand implements SubCommand {
         }
         Player player = (Player) sender;
         String pactId = args[1];
+
+        if (pactId.equalsIgnoreCase("heartlink") || pactId.equalsIgnoreCase("heart_link")) {
+            if (args.length < 3) {
+                sender.sendMessage(plugin.getFormattedMessage("heartlink_usage"));
+                return true;
+            }
+            String targetName = args[2];
+            pactManager.requestHeartLink(player, targetName);
+            return true;
+        }
+
         Pact target = pactManager.getLoadedPacts().get(pactId);
         if (target == null) {
             sender.sendMessage(plugin.getFormattedMessage("pact_not_found"));

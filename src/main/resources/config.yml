@@ -46,6 +46,13 @@ pacts:
       material: BONE
       unbreakable: true
 
+  heartlink:
+    display_name: "&eHeart Link"
+    cost_health: 0.0
+    permission: "soulledger.pact.heartlink"
+    icon: HEART_OF_THE_SEA
+    effects: []
+
   # glass_cannon:
   #   display_name: "&cGlass Cannon"
   #   cost_health: 10.0 # Reduces 5 hearts (Base health is 20.0)
@@ -209,8 +216,29 @@ messages:
     summon_type_error: "&cError identifying mob type: %type%"
     summoned_soul_name: "Summoned Soul by %player%"
     predator_buff_message: "&a[Killed %mob%]: %effects%"
+    heartlink_usage: "&cTo create a Heart Link: /sl seal heartlink <player>"
+    heartlink_request_sent: "&aHeart Link request sent to %target%."
+    heartlink_request_received: "&e%from% wants to create a Heart Link with you. Type %cmd% to accept."
+    heartlink_no_request: "&cNo Heart Link request found for you."
+    heartlink_created: "&dHeart Link created with %other%! Your hearts are bound."
+    heartlink_revoked: "&cYour Heart Link has been revoked."
+    heartlink_already_linked: "&cOne of the players is already heart-linked."
+    heartlink_accept_usage: "&cUsage: /sl acceptheartlink <player>"
+    heartlink_menu_title: "&cHeart Link - Send Request"
+    heartlink_requests_title: "&6Heart Link - Requests"
+    heartlink_no_targets: "&cNo online players available to link."
+    heartlink_no_requests: "&cYou have no incoming Heart Link requests."
+
   pt:
     necromancer_gui_title: "&5Invocar Alma"
+    heartlink_usage: "&cPara criar um Heart Link: /sl seal heartlink <player>"
+    heartlink_request_sent: "&aPedido de Heart Link enviado para %target%."
+    heartlink_request_received: "&e%from% quer criar um Heart Link com você. Digite %cmd% para aceitar."
+    heartlink_no_request: "&cNenhum pedido de Heart Link encontrado para você."
+    heartlink_created: "&dHeart Link criado com %other%! Seus corações estão ligados."
+    heartlink_revoked: "&cSeu Heart Link foi revogado."
+    heartlink_already_linked: "&cUm dos jogadores já possui um Heart Link."
+    heartlink_accept_usage: "&cUso: /sl acceptheartlink <player>"
     soul_recovered: "&aVocê recuperou 1 coração ao perder sua alma invocada."
     soul_recovered_creeper: "&aVocê recuperou 1 coração ao perder sua alma invocada (Creeper explodiu)."
     prefix: "&5[Soul Ledger] "

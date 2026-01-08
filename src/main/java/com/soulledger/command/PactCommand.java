@@ -27,6 +27,7 @@ public class PactCommand implements CommandExecutor, TabCompleter {
         registerSubCommand(new ListSubCommand(plugin));
         registerSubCommand(new ReloadSubCommand(plugin));
         registerSubCommand(new GuiSubCommand(plugin));
+        registerSubCommand(new com.soulledger.command.sub.AcceptHeartLinkSubCommand(plugin));
         registerSubCommand(plugin.createListSoulsSubCommand());
     }
 
