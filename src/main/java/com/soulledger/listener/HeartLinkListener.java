@@ -34,6 +34,34 @@ public class HeartLinkListener implements Listener {
         try {
             double dmg = event.getFinalDamage();
             partner.damage(dmg);
+
+            try {
+                if (event instanceof org.bukkit.event.entity.EntityDamageByEntityEvent) {
+                    org.bukkit.event.entity.EntityDamageByEntityEvent edbe = (org.bukkit.event.entity.EntityDamageByEntityEvent) event;
+                    org.bukkit.entity.Entity damager = edbe.getDamager();
+                    org.bukkit.util.Vector dir = null;
+
+                    if (damager != null) {
+                        if (damager instanceof org.bukkit.entity.Projectile) {
+                            org.bukkit.entity.Projectile proj = (org.bukkit.entity.Projectile) damager;
+                            Object shooter = proj.getShooter();
+                            if (shooter instanceof org.bukkit.entity.Entity) {
+                                dir = player.getLocation().toVector().subtract(((org.bukkit.entity.Entity) shooter).getLocation().toVector()).normalize();
+                            }
+                        } else if (damager instanceof org.bukkit.entity.Entity) {
+                            dir = player.getLocation().toVector().subtract(damager.getLocation().toVector()).normalize();
+                        }
+                    }
+
+                    if (dir != null) {
+                        double strength = 0.4;
+                        strength = Math.max(0.2, Math.min(1.0, dmg / 6.0));
+                        partner.setVelocity(dir.multiply(strength));
+                    }
+                }
+            } catch (Exception ignoredKnockback) {
+            }
+
         } catch (Exception ignored) {
         } finally {
             pactManager.unmarkIgnoreDamage(partner.getUniqueId());

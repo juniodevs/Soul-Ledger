@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
 public class PlayerDeathListener implements Listener {
@@ -56,5 +57,13 @@ public class PlayerDeathListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         pactManager.restorePacts(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        if (pactManager.isHeartLinked(player)) {
+            pactManager.removeHeartLink(player);
+        }
     }
 }

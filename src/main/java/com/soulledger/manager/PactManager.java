@@ -40,6 +40,7 @@ public class PactManager {
     private final Random random = new Random();
 
     private final NamespacedKey heartLinkKey;
+    private final NamespacedKey heartLinkAppliedKey;
     private final Map<java.util.UUID, java.util.UUID> heartLinks = new HashMap<>();
     private final Map<java.util.UUID, java.util.UUID> pendingHeartRequests = new HashMap<>();
     private final java.util.Set<java.util.UUID> ignoreDamage = new HashSet<>();
@@ -51,6 +52,7 @@ public class PactManager {
         this.plugin = plugin;
         this.pdcKey = new NamespacedKey(plugin, "active_pacts");
         this.heartLinkKey = new NamespacedKey(plugin, "heart_link_partner");
+        this.heartLinkAppliedKey = new NamespacedKey(plugin, "heart_link_applied");
         loadPactsFromConfig();
         plugin.getServer().getOnlinePlayers().forEach(this::restorePacts);
         plugin.getServer().getOnlinePlayers().forEach(this::restoreHeartLink);
@@ -416,6 +418,9 @@ public class PactManager {
         // Save to persistent data
         acceptor.getPersistentDataContainer().set(heartLinkKey, PersistentDataType.STRING, requester.getUniqueId().toString());
         requester.getPersistentDataContainer().set(heartLinkKey, PersistentDataType.STRING, acceptor.getUniqueId().toString());
+        // Mark that the doubling has been applied to avoid re-applying on reconnect
+        acceptor.getPersistentDataContainer().set(heartLinkAppliedKey, PersistentDataType.STRING, "true");
+        requester.getPersistentDataContainer().set(heartLinkAppliedKey, PersistentDataType.STRING, "true");
 
         // In-memory mapping
         heartLinks.put(acceptor.getUniqueId(), requester.getUniqueId());
@@ -441,9 +446,14 @@ public class PactManager {
             if (otherPlayer != null) {
                 heartLinks.put(player.getUniqueId(), otherId);
                 heartLinks.put(otherId, player.getUniqueId());
-                // ensure doubled health is in place for the online player
-                AttributeInstance health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-                if (health != null) health.setBaseValue(health.getBaseValue() * 2.0);
+                String applied = pdc.get(heartLinkAppliedKey, PersistentDataType.STRING);
+                if (!"true".equals(applied)) {
+                    AttributeInstance health = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+                    if (health != null) {
+                        health.setBaseValue(health.getBaseValue() * 2.0);
+                        pdc.set(heartLinkAppliedKey, PersistentDataType.STRING, "true");
+                    }
+                }
             }
         } catch (Exception ignored) {}
     }
@@ -471,6 +481,7 @@ public class PactManager {
         UUID playerId = player.getUniqueId();
         heartLinks.remove(playerId);
         player.getPersistentDataContainer().remove(heartLinkKey);
+        player.getPersistentDataContainer().remove(heartLinkAppliedKey);
         List<String> pacts = activePacts.getOrDefault(playerId, new ArrayList<>());
         pacts.remove("heartlink");
         activePacts.put(playerId, pacts);
@@ -479,6 +490,7 @@ public class PactManager {
             UUID partnerId = partner.getUniqueId();
             heartLinks.remove(partnerId);
             partner.getPersistentDataContainer().remove(heartLinkKey);
+            partner.getPersistentDataContainer().remove(heartLinkAppliedKey);
             List<String> p2 = activePacts.getOrDefault(partnerId, new ArrayList<>());
             p2.remove("heartlink");
             activePacts.put(partnerId, p2);
