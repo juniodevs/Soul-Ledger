@@ -45,10 +45,18 @@ public class ItemListener implements Listener {
         return meta.hasDisplayName() && meta.getDisplayName().contains(name);
     }
 
+    private boolean isFamiliarStaff(ItemStack item) {
+        if (item == null || item.getType() != Material.BONE || !item.hasItemMeta()) return false;
+        ItemMeta meta = item.getItemMeta();
+        String lang = plugin.getConfig().getString("settings.language", "en");
+        String name = plugin.getConfig().getString("messages." + lang + ".familiar_staff_name", "Familiar Whistle");
+        return meta.hasDisplayName() && meta.getDisplayName().contains(name);
+    }
+
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         ItemStack item = event.getItemDrop().getItemStack();
-        if (isFlameStaff(item) || isNecroStick(item)) {
+        if (isFlameStaff(item) || isNecroStick(item) || isFamiliarStaff(item)) {
             event.getItemDrop().remove();
             event.setCancelled(true);
         }
@@ -75,6 +83,44 @@ public class ItemListener implements Listener {
                 plugin.getNecromancerSummonGui().open(player);
             }
             event.setCancelled(true);
+        } else if (isFamiliarStaff(item)) {
+            if (pactManager.hasPact(player, "familiar")) {
+                double maxHealth = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                if (maxHealth <= 2.0) {
+                    player.sendMessage(plugin.getFormattedMessage("familiar_low_health"));
+                    event.setCancelled(true);
+                    return;
+                }
+                event.setCancelled(true);
+                try {
+                        org.bukkit.entity.Wolf wolf = (org.bukkit.entity.Wolf) player.getWorld().spawnEntity(player.getLocation(), org.bukkit.entity.EntityType.WOLF);
+                    String customName = plugin.getFormattedMessage("summoned_familiar_name").replace("%player%", player.getName());
+                    wolf.setCustomName(org.bukkit.ChatColor.DARK_AQUA + customName);
+                    wolf.setCustomNameVisible(true);
+                    wolf.setRemoveWhenFarAway(true);
+                    wolf.setOwner(player);
+                    wolf.setMetadata("familiar_owner", new org.bukkit.metadata.FixedMetadataValue(plugin, player.getUniqueId().toString()));
+                    plugin.getMobListener().addSummonedSoul(player, wolf);
+
+                    wolf.addPotionEffect(new org.bukkit.potion.PotionEffect(org.bukkit.potion.PotionEffectType.GLOWING, 20 * 6, 0));
+                    player.getWorld().spawnParticle(org.bukkit.Particle.CLOUD, wolf.getLocation().add(0, 0.5, 0), 20, 0.3, 0.3, 0.3, 0.02);
+                    player.getWorld().spawnParticle(org.bukkit.Particle.SOUL, wolf.getLocation().add(0, 0.5, 0), 15, 0.3, 0.3, 0.3, 0.02);
+                    player.getWorld().spawnParticle(org.bukkit.Particle.HEART, player.getLocation(), 8, 0.5, 1, 0.5, 0.1);
+                    player.getWorld().playSound(wolf.getLocation(), org.bukkit.Sound.ENTITY_EVOKER_CAST_SPELL, 0.8f, 1f);
+
+                    double currentMax = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                    player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH).setBaseValue(Math.max(2, currentMax - 2));
+                    plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                        if (!wolf.isDead()) wolf.setHealth(0.0);
+                        else {
+                        }
+                    }, 20 * 30);
+                    player.sendMessage(org.bukkit.ChatColor.AQUA + plugin.getFormattedMessage("familiar_summoned"));
+                } catch (Exception ex) {
+                    player.sendMessage(org.bukkit.ChatColor.RED + plugin.getFormattedMessage("summon_error") + ex.getMessage());
+                }
+            }
+            event.setCancelled(true);
         }
     }
 
@@ -98,6 +144,18 @@ public class ItemListener implements Listener {
         
         player.getInventory().all(Material.BLAZE_ROD).values().forEach(item -> {
             if (isFlameStaff(item)) {
+                player.getInventory().remove(item);
+            }
+        });
+        
+        player.getInventory().all(Material.BOOK).values().forEach(item -> {
+            if (isNecroStick(item)) {
+                player.getInventory().remove(item);
+            }
+        });
+        
+        player.getInventory().all(Material.BONE).values().forEach(item -> {
+            if (isFamiliarStaff(item)) {
                 player.getInventory().remove(item);
             }
         });

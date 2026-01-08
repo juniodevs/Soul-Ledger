@@ -33,172 +33,18 @@ pacts:
     cost_health: 5.0
     permission: "soulledger.pact.predator"
     icon: TROPICAL_FISH
+
+
+  familiar:
+    display_name: "&3Familiar Pact"
+    cost_health: 2.0
+    permission: "soulledger.pact.familiar"
+    icon: BONE
     effects: []
-    mob_buffs:
-      ZOMBIE:
-        effect: SPEED
-        amplifier: 0
-        duration: 30
-      SKELETON:
-        effect: INCREASE_DAMAGE
-        amplifier: 0
-        duration: 30
-      SPIDER:
-        effect: NIGHT_VISION
-        amplifier: 0
-        duration: 60
-      CREEPER:
-        effect: DAMAGE_RESISTANCE
-        amplifier: 0
-        duration: 20
-      BLAZE:
-        effect: FIRE_RESISTANCE
-        amplifier: 0
-        duration: 45
-      ENDERMAN:
-        effect: JUMP
-        amplifier: 0
-        duration: 30
-      SLIME:
-        effect: DAMAGE_RESISTANCE
-        amplifier: 0
-        duration: 20
-      MAGMA_CUBE:
-        effect: FIRE_RESISTANCE
-        amplifier: 0
-        duration: 30
-      PHANTOM:
-        effect: SLOW_FALLING
-        amplifier: 0
-        duration: 30
-      WITHER_SKELETON:
-        effect: INCREASE_DAMAGE
-        amplifier: 1
-        duration: 20
-      DROWNED:
-        effect: WATER_BREATHING
-        amplifier: 0
-        duration: 60
-      HUSK:
-        effect: SATURATION
-        amplifier: 0
-        duration: 30
-      STRAY:
-        effect: SLOW
-        amplifier: 0
-        duration: 15
-      PIGLIN:
-        effect: INCREASE_DAMAGE
-        amplifier: 0
-        duration: 30
-      HOGLIN:
-        effect: DAMAGE_RESISTANCE
-        amplifier: 0
-        duration: 20
-      ZOMBIFIED_PIGLIN:
-        effect: SPEED
-        amplifier: 0
-        duration: 30
-      PILLAGER:
-        effect: BAD_OMEN
-        amplifier: 0
-        duration: 30
-      VEX:
-        effect: INVISIBILITY
-        amplifier: 0
-        duration: 10
-      VINDICATOR:
-        effect: INCREASE_DAMAGE
-        amplifier: 0
-        duration: 20
-      RAVAGER:
-        effect: KNOCKBACK_RESISTANCE
-        amplifier: 0
-        duration: 20
-      SHEEP:
-        effect: REGENERATION
-        amplifier: 0
-        duration: 15
-      COW:
-        effect: REGENERATION
-        amplifier: 0
-        duration: 15
-      PIG:
-        effect: SATURATION
-        amplifier: 0
-        duration: 20
-      CHICKEN:
-        effect: FEATHER_FALLING
-        amplifier: 0
-        duration: 30
-      HORSE:
-        effect: SPEED
-        amplifier: 0
-        duration: 30
-      RABBIT:
-        effect: JUMP
-        amplifier: 0
-        duration: 30
-      LLAMA:
-        effect: SPEED
-        amplifier: 0
-        duration: 30
-      WOLF:
-        effect: SPEED
-        amplifier: 0
-        duration: 30
-      CAT:
-        effect: NIGHT_VISION
-        amplifier: 0
-        duration: 60
-      OCELOT:
-        effect: SPEED
-        amplifier: 0
-        duration: 30
-      PARROT:
-        effect: SLOW_FALLING
-        amplifier: 0
-        duration: 30
-      TURTLE:
-        effect: DAMAGE_RESISTANCE
-        amplifier: 0
-        duration: 20
-      COD:
-        effect: WATER_BREATHING
-        amplifier: 0
-        duration: 30
-      SALMON:
-        effect: WATER_BREATHING
-        amplifier: 0
-        duration: 30
-      PUFFERFISH:
-        effect: WATER_BREATHING
-        amplifier: 0
-        duration: 30
-      TROPICAL_FISH:
-        effect: WATER_BREATHING
-        amplifier: 0
-        duration: 30
-      SQUID:
-        effect: WATER_BREATHING
-        amplifier: 0
-        duration: 30
-      DOLPHIN:
-        effect: DOLPHINS_GRACE
-        amplifier: 0
-        duration: 30
-      BAT:
-        effect: SPEED
-        amplifier: 0
-        duration: 20
-      SILVERFISH:
-        effect: SPEED
-        amplifier: 0
-        duration: 15
-      ENDERMITE:
-        effect: JUMP
-        amplifier: 0
-        duration: 15
+    item:
+      name: "&bFamiliar Whistle"
+      material: BONE
+      unbreakable: true
 
   # glass_cannon:
   #   display_name: "&cGlass Cannon"
@@ -330,6 +176,13 @@ messages:
     soul_staff_lore:
       - "&7Click to summon the soul of mobs"
       - "&8(Necromancer)"
+    familiar_staff_name: "Familiar Whistle"
+    familiar_staff_lore:
+      - "&7Click to summon a wolf familiar"
+      - "&8(Familiar)"
+    familiar_low_health: "&cYou cannot summon familiars with only 1 heart of life!"
+    familiar_summoned: "&bYou summoned a familiar! Your max health was reduced by 1 heart."
+    summoned_familiar_name: "Familiar of %player%"
     pact_sealed: "%prefix%&dYou sacrificed your vital essence for the %pact%&d pact!"
     pact_revoked: "%prefix%&7Your soul was purified in death."
     already_has: "&cYou already have this pact."
@@ -365,6 +218,13 @@ messages:
     soul_staff_lore:
       - "&7Clique para invocar a alma de mobs"
       - "&8(Necromante)"
+    familiar_staff_name: "Apito de Familiar"
+    familiar_staff_lore:
+      - "&7Clique para invocar um lobo familiar"
+      - "&8(Familiar)"
+    familiar_low_health: "&cVocê não pode invocar familiares com apenas 1 coração de vida!"
+    familiar_summoned: "&bVocê invocou um familiar! Sua vida máxima foi reduzida em 1 coração."
+    summoned_familiar_name: "Familiar de %player%"
     pact_sealed: "%prefix%&dVocê sacrificou sua essência vital pelo pacto %pact%&d!"
     pact_revoked: "%prefix%&7Sua alma foi purificada na morte."
     already_has: "&cVocê já possui este pacto."

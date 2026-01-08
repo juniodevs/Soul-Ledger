@@ -282,6 +282,8 @@ public class PactManager {
             giveItem(player, Material.BOOK, "soul_staff_name", "soul_staff_lore", true);
         } else if (pactId.equalsIgnoreCase("flame")) {
             giveItem(player, Material.BLAZE_ROD, "Flame Staff", null, false);
+        } else if (pactId.equalsIgnoreCase("familiar")) {
+            giveItem(player, Material.BONE, "familiar_staff_name", "familiar_staff_lore", true);
         }
     }
 
